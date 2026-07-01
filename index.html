@@ -1,0 +1,1382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PFAS Client Portal</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy: #1F3A5F;
+    --navy-dark: #16294A;
+    --gold: #C9A864;
+    --gold-light: #E8D4A0;
+    --green: #276749;
+    --amber: #B7791F;
+    --red: #9B2C2C;
+    --slate: #475569;
+    --slate-light: #94A3B8;
+    --bg: #F4F6F9;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+  }
+  html, body {
+    background: var(--bg); color: #1E293B;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-size: 14px; line-height: 1.5; min-height: 100vh;
+  }
+  body { padding: 0; }
+
+  /* ============ LOGIN SCREEN ============ */
+  .login-overlay {
+    position: fixed; inset: 0; z-index: 999;
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 60%, #2C4F7C 100%);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .login-overlay.hidden { display: none; }
+  .login-card {
+    background: #fff; border-radius: 20px; padding: 44px 40px;
+    width: 100%; max-width: 420px;
+    box-shadow: 0 24px 80px rgba(0,0,0,0.35);
+    position: relative; overflow: hidden;
+  }
+  .login-card::before {
+    content: ""; position: absolute; top: 0; left: 0; right: 0; height: 5px;
+    background: linear-gradient(90deg, var(--gold), var(--gold-light), var(--gold));
+  }
+  .login-logo {
+    width: 60px; height: 60px;
+    background: linear-gradient(135deg, var(--navy), #2C4F7C);
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 26px; color: #fff;
+    margin: 0 auto 18px;
+    box-shadow: 0 8px 20px rgba(31,58,95,0.25);
+  }
+  .login-title {
+    text-align: center; font-size: 22px; font-weight: 700; color: var(--navy);
+    letter-spacing: -0.3px;
+  }
+  .login-sub {
+    text-align: center; font-size: 13px; color: var(--slate);
+    margin-top: 6px; margin-bottom: 28px;
+  }
+  .login-field { margin-bottom: 14px; }
+  .login-label {
+    display: block; font-size: 11px; font-weight: 600; color: var(--slate);
+    letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .login-input {
+    width: 100%; padding: 11px 14px;
+    border: 1px solid var(--border); border-radius: 10px;
+    font-size: 14px; font-family: inherit; outline: none;
+    transition: border 0.15s;
+  }
+  .login-input:focus { border-color: var(--navy); box-shadow: 0 0 0 3px rgba(31,58,95,0.08); }
+  .login-btn {
+    width: 100%; padding: 12px;
+    background: linear-gradient(135deg, var(--navy), var(--navy-dark));
+    color: #fff; border: none; border-radius: 10px;
+    font-size: 14px; font-weight: 600; cursor: pointer;
+    margin-top: 12px; transition: all 0.15s;
+  }
+  .login-btn:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(31,58,95,0.3); }
+  .login-error { font-size: 12px; color: var(--red); text-align: center; margin-top: 10px; display: none; }
+  .login-error.show { display: block; }
+  .login-footer { text-align: center; font-size: 11px; color: var(--slate-light); margin-top: 24px; letter-spacing: 0.5px; }
+  .login-hint {
+    background: #F8FAFC; border-radius: 8px; padding: 10px 14px;
+    font-size: 11px; color: var(--slate); margin-top: 16px;
+    border-left: 3px solid var(--gold);
+  }
+  .login-hint strong { color: var(--navy); }
+
+  /* ============ TOP BAR ============ */
+  .topbar {
+    background: linear-gradient(135deg, var(--navy-dark) 0%, var(--navy) 100%);
+    color: #fff; padding: 14px 28px;
+    display: flex; align-items: center; justify-content: space-between;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand-logo {
+    width: 40px; height: 40px;
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 18px; color: var(--navy-dark);
+  }
+  .brand-name { font-weight: 700; font-size: 16px; letter-spacing: 0.3px; }
+  .brand-sub { font-size: 10px; letter-spacing: 2px; color: var(--gold-light); text-transform: uppercase; margin-top: 2px; }
+  .topbar-right { display: flex; align-items: center; gap: 16px; font-size: 12px; }
+  .live-badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: rgba(46, 204, 113, 0.15); color: #4ADE80;
+    padding: 4px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .live-dot { width: 6px; height: 6px; background: #4ADE80; border-radius: 50%; animation: pulse 2s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .user-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 4px 12px 4px 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 18px; font-size: 12px;
+  }
+  .user-chip .av { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); color: var(--navy-dark); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 11px; }
+  .logout-btn {
+    background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15);
+    padding: 6px 12px; border-radius: 16px; font-size: 11px; cursor: pointer;
+  }
+  .logout-btn:hover { background: rgba(255,255,255,0.18); }
+
+  .container { max-width: 1480px; margin: 0 auto; padding: 24px 28px; }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--navy) 0%, #2C4F7C 100%);
+    color: #fff; border-radius: 16px; padding: 28px 32px;
+    margin-bottom: 24px; position: relative; overflow: hidden;
+  }
+  .hero::after {
+    content: ""; position: absolute; right: -80px; top: -80px;
+    width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(201, 168, 100, 0.18) 0%, transparent 70%);
+  }
+  .hero-eyebrow { font-size: 10px; letter-spacing: 2.5px; color: var(--gold-light); font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+  .hero-title { font-size: 28px; font-weight: 700; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .hero-sub { font-size: 15px; opacity: 0.85; max-width: 700px; line-height: 1.5; }
+  .live-corner {
+    position: absolute; top: 14px; right: 18px;
+    background: rgba(255,255,255,0.12); color: #fff;
+    padding: 4px 9px; border-radius: 10px;
+    font-size: 10px; font-weight: 600;
+    display: flex; align-items: center; gap: 5px; letter-spacing: 0.5px;
+  }
+  .live-corner::before {
+    content: ""; width: 6px; height: 6px; background: #4ADE80; border-radius: 50%; animation: pulse 2s infinite;
+  }
+
+  /* SELECTOR */
+  .selector-wrap {
+    background: var(--card); border-radius: 14px;
+    padding: 18px 24px; border: 1px solid var(--border);
+    margin-bottom: 24px;
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .selector-label { font-size: 11px; letter-spacing: 1.5px; font-weight: 700; color: var(--slate); text-transform: uppercase; }
+  .selector-pills { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+  .pill {
+    padding: 7px 14px; border-radius: 18px; border: 1px solid var(--border);
+    font-size: 12.5px; font-weight: 500; cursor: pointer;
+    transition: all 0.15s; color: var(--slate);
+    background: var(--card); white-space: nowrap;
+  }
+  .pill:hover { border-color: var(--navy); color: var(--navy); }
+  .pill.active {
+    background: var(--navy); color: #fff; border-color: var(--navy);
+    box-shadow: 0 4px 12px rgba(31, 58, 95, 0.25);
+  }
+
+  .main-grid { display: grid; grid-template-columns: 1fr 380px; gap: 24px; }
+  @media (max-width: 1100px) { .main-grid { grid-template-columns: 1fr; } }
+
+  .project-header {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 26px 28px; margin-bottom: 20px;
+  }
+  .ph-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 16px; }
+  .ph-title-block { flex: 1; }
+  .ph-eyebrow { font-size: 11px; letter-spacing: 2px; font-weight: 600; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+  .ph-title { font-size: 24px; font-weight: 700; color: #1E293B; line-height: 1.25; }
+  .ph-meta { display: flex; gap: 18px; margin-top: 12px; font-size: 13px; color: var(--slate); flex-wrap: wrap; }
+  .ph-meta strong { color: #1E293B; font-weight: 600; }
+  .health-chip {
+    padding: 7px 14px; border-radius: 12px;
+    font-size: 12px; font-weight: 700;
+    letter-spacing: 0.5px; white-space: nowrap;
+  }
+  .health-green { background: #DCFCE7; color: var(--green); }
+  .health-amber { background: #FEF3C7; color: var(--amber); }
+  .health-red   { background: #FECACA; color: var(--red); }
+
+  .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px; }
+  .kpi {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 14px; padding: 16px 18px;
+    position: relative; overflow: hidden;
+  }
+  .kpi::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+  .kpi.k-progress::before { background: var(--green); }
+  .kpi.k-tasks::before    { background: var(--navy); }
+  .kpi.k-phase::before    { background: var(--gold); }
+  .kpi.k-fee::before      { background: #8B5CF6; }
+  .kpi-label { font-size: 10px; letter-spacing: 1.4px; font-weight: 700; color: var(--slate); text-transform: uppercase; margin-bottom: 6px; }
+  .kpi-value { font-size: 24px; font-weight: 700; line-height: 1; }
+  .kpi.k-progress .kpi-value { color: var(--green); }
+  .kpi.k-tasks .kpi-value    { color: var(--navy); }
+  .kpi.k-phase .kpi-value    { color: var(--gold); font-size: 17px; line-height: 1.2; padding-top: 2px; }
+  .kpi.k-fee .kpi-value      { color: #6D28D9; }
+  .kpi-sub { font-size: 11px; color: var(--slate-light); margin-top: 4px; }
+
+  .section-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 22px 24px; margin-bottom: 20px;
+  }
+  .section-title {
+    font-size: 11px; letter-spacing: 2px; font-weight: 700;
+    color: var(--slate); text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::before { content: ""; width: 4px; height: 14px; background: var(--gold); border-radius: 2px; }
+
+  .phase-row { padding: 10px 0; border-bottom: 1px dashed #F1F5F9; }
+  .phase-row:last-of-type { border-bottom: none; }
+  .phase-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+  .phase-name { font-size: 13px; font-weight: 600; color: #1E293B; flex: 1; }
+  .phase-pct { font-size: 12.5px; font-weight: 700; }
+  .phase-bar { height: 6px; background: #F1F5F9; border-radius: 3px; overflow: hidden; }
+  .phase-bar > span { display: block; height: 100%; border-radius: 3px; transition: width 0.5s; }
+  .b-green > span { background: linear-gradient(90deg, var(--green), #34A06F); }
+  .b-amber > span { background: linear-gradient(90deg, var(--amber), #D69334); }
+  .b-red   > span { background: linear-gradient(90deg, var(--red), #C84545); }
+  .b-grey  > span { background: #CBD5E1; }
+  .pct-green { color: var(--green); } .pct-amber { color: var(--amber); } .pct-red { color: var(--red); } .pct-grey { color: var(--slate-light); }
+
+  .status-report {
+    background: linear-gradient(135deg, #F8FAFC 0%, #fff 100%);
+    border-left: 4px solid var(--navy);
+    padding: 16px 20px; border-radius: 0 12px 12px 0;
+    font-size: 13px; line-height: 1.65; color: #334155;
+  }
+  .status-report strong { color: #1E293B; font-weight: 600; }
+  .status-report .sr-meta { font-size: 10.5px; letter-spacing: 1px; color: var(--slate-light); font-weight: 600; text-transform: uppercase; margin-bottom: 8px; }
+
+  .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 12px; }
+  .member-card {
+    background: linear-gradient(135deg, #FAFBFC 0%, #F4F6F9 100%);
+    border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px;
+    display: flex; gap: 12px; align-items: center;
+    transition: all 0.15s; cursor: pointer;
+  }
+  .member-card:hover { border-color: var(--navy); box-shadow: 0 4px 14px rgba(31, 58, 95, 0.1); }
+  .avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 700; font-size: 14px; flex-shrink: 0;
+  }
+  .av-navy   { background: linear-gradient(135deg, var(--navy), #2C4F7C); }
+  .av-gold   { background: linear-gradient(135deg, var(--gold), #B89653); }
+  .av-green  { background: linear-gradient(135deg, var(--green), #34A06F); }
+  .av-purple { background: linear-gradient(135deg, #8B5CF6, #6D28D9); }
+  .member-info { flex: 1; min-width: 0; }
+  .member-name { font-size: 13px; font-weight: 600; color: #1E293B; }
+  .member-role { font-size: 11px; color: var(--slate-light); margin-top: 2px; }
+  .member-email { font-size: 11px; color: var(--navy); margin-top: 4px; word-break: break-all; }
+
+  .actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .action-btn {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 16px 18px;
+    text-decoration: none;
+    display: flex; align-items: center; gap: 14px;
+    transition: all 0.15s; cursor: pointer; text-align: left;
+    color: inherit;
+  }
+  .action-btn:hover { border-color: var(--navy); transform: translateY(-1px); box-shadow: 0 6px 18px rgba(31, 58, 95, 0.1); }
+  .action-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .ai-blue   { background: #DBEAFE; color: #1E40AF; }
+  .ai-green  { background: #DCFCE7; color: var(--green); }
+  .ai-purple { background: #EDE9FE; color: #6D28D9; }
+  .ai-orange { background: #FED7AA; color: #9A3412; }
+  .ai-pink   { background: #FCE7F3; color: #BE185D; }
+  .ai-cyan   { background: #CFFAFE; color: #155E75; }
+  .action-text { flex: 1; }
+  .action-title { font-size: 13px; font-weight: 600; color: #1E293B; }
+  .action-desc { font-size: 11px; color: var(--slate-light); margin-top: 2px; }
+
+  .sidebar { display: flex; flex-direction: column; gap: 20px; }
+
+  .chat-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+    display: flex; flex-direction: column; min-height: 560px;
+  }
+  .chat-header {
+    background: linear-gradient(135deg, #6264A7, #5159B6);
+    color: #fff; padding: 16px 18px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .chat-avatar {
+    width: 38px; height: 38px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 18px;
+  }
+  .chat-title { font-size: 14px; font-weight: 600; }
+  .chat-status { font-size: 11px; opacity: 0.85; display: flex; align-items: center; gap: 5px; }
+  .chat-status::before { content: ""; width: 7px; height: 7px; background: #4ADE80; border-radius: 50%; }
+  .chat-body {
+    flex: 1; overflow-y: auto; padding: 18px;
+    background: #FAFBFC;
+    display: flex; flex-direction: column; gap: 12px;
+    min-height: 320px; max-height: 380px;
+  }
+  .msg { max-width: 88%; padding: 10px 14px; border-radius: 14px; font-size: 13px; line-height: 1.45; }
+  .msg-them { background: #fff; border: 1px solid var(--border); align-self: flex-start; border-bottom-left-radius: 4px; }
+  .msg-me { background: #6264A7; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+  .msg-sender { font-size: 10px; color: var(--slate-light); margin-bottom: 3px; font-weight: 600; letter-spacing: 0.3px; padding: 0 4px; }
+  .msg-time { font-size: 10px; opacity: 0.6; margin-top: 4px; }
+  .chat-cta-banner {
+    padding: 14px 18px;
+    background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+    border-top: 1px solid var(--border); text-align: center;
+  }
+  .chat-cta-banner .lbl {
+    font-size: 10.5px; letter-spacing: 0.8px; color: var(--slate);
+    margin-bottom: 8px; text-transform: uppercase; font-weight: 600;
+  }
+  .chat-cta {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: linear-gradient(135deg, #6264A7, #5159B6);
+    color: #fff; padding: 10px 18px; border-radius: 22px;
+    text-decoration: none; font-size: 13px; font-weight: 600;
+    transition: all 0.15s;
+  }
+  .chat-cta:hover { transform: translateY(-1px); box-shadow: 0 8px 20px rgba(98, 100, 167, 0.35); }
+
+  .feed-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 16px; padding: 20px 22px;
+  }
+  .feed-item {
+    display: flex; gap: 12px; padding: 10px 0;
+    border-bottom: 1px dashed #F1F5F9;
+  }
+  .feed-item:last-of-type { border-bottom: none; }
+  .feed-icon {
+    width: 28px; height: 28px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; flex-shrink: 0; margin-top: 2px;
+  }
+  .fi-done    { background: #DCFCE7; color: var(--green); }
+  .fi-update  { background: #DBEAFE; color: #1E40AF; }
+  .fi-comment { background: #EDE9FE; color: #6D28D9; }
+  .fi-meeting { background: #FEF3C7; color: var(--amber); }
+  .feed-text { flex: 1; font-size: 12.5px; color: var(--slate); line-height: 1.5; }
+  .feed-text strong { color: #1E293B; font-weight: 600; }
+  .feed-time { font-size: 10.5px; color: var(--slate-light); margin-top: 2px; }
+
+  .chat-body::-webkit-scrollbar { width: 6px; }
+  .chat-body::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+</style>
+<script src="https://cdn.auth0.com/js/auth0-spa-js/2.1/auth0-spa-js.production.js"></script>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-card">
+    <div class="login-logo">P</div>
+    <div class="login-title">PFAS Client Portal</div>
+    <div class="login-sub">Sign in to access your engagement workspace</div>
+
+    <div style="text-align: center; padding: 24px 0 8px;">
+      <button class="login-btn" onclick="attemptLogin()" style="margin-top: 0;">Sign In Securely</button>
+    </div>
+
+    <div class="login-error" id="loginError">Invalid login</div>
+
+    <div class="login-hint">
+      <strong>Secure login powered by Auth0.</strong> You will be redirected to a secure sign-in page. Contact your PFAS engagement lead if you need access.
+    </div>
+
+    <div class="login-footer">© 2026 Punjab Financial Advisory Services</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="appShell" style="display: none;">
+
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-logo">P</div>
+      <div>
+        <div class="brand-sub">Punjab Financial Advisory Services</div>
+        <div class="brand-name">Client Portal</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="live-badge"><span class="live-dot"></span> LIVE · Synced with ClickUp</span>
+      <span class="user-chip"><span class="av" id="userInitial">D</span><span id="userName">Demo Client</span></span>
+      <button class="logout-btn" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="container">
+
+    <div class="hero">
+      <div class="live-corner">LIVE FEED</div>
+      <div class="hero-eyebrow">Project Portfolio Overview</div>
+      <div class="hero-title">Welcome to your PFAS engagement portal</div>
+      <div class="hero-sub">Track project progress, communicate with your advisory team in Microsoft Teams, access shared documents and meeting minutes, and schedule meetings — all in one place.</div>
+    </div>
+
+    <div class="main-grid">
+
+      <div>
+        <div class="project-header" id="projectHeader"></div>
+        <div class="kpi-row" id="kpiRow"></div>
+
+        <div class="section-card">
+          <div class="section-title">Your PFAS Advisory Team</div>
+          <div class="team-grid" id="teamGrid"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title">Latest Status Update — Live from ClickUp</div>
+          <div class="status-report" id="statusReport"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title">Phase Progress</div>
+          <div id="phaseList"></div>
+        </div>
+
+        <div class="section-card">
+          <div class="section-title">Quick Actions</div>
+          <div class="actions-grid" id="actionsGrid"></div>
+        </div>
+
+      </div>
+
+      <div class="sidebar">
+
+        <div class="chat-card">
+          <div class="chat-header">
+            <div class="chat-avatar">💬</div>
+            <div>
+              <div class="chat-title" id="chatTitle">Microsoft Teams Conversation</div>
+              <div class="chat-status">Team typically responds within 2 hours</div>
+            </div>
+          </div>
+          <div class="chat-body" id="chatBody"></div>
+          <div class="chat-cta-banner">
+            <div class="lbl">Continue the conversation in Teams</div>
+            <a class="chat-cta" id="chatCta" href="#" target="_blank">
+              ↗ Open in Microsoft Teams
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+// One login per client. Each code unlocks ONLY that client's project.
+// ============ AUTH0 CONFIG ============
+const AUTH0_DOMAIN = "dev-zrdwden5qdovxa40.us.auth0.com";
+const AUTH0_CLIENT_ID = "Rhh7Of9haJruOvHsEYswD5YtmohXV81N";
+
+// Map Auth0 email → project
+const EMAIL_PROJECT_MAP = {
+  "demo@pfas.pk":       { name: "Demo Client",            project: "pcmmdc" },
+  "pcmmdc@pfas.pk":     { name: "PCMMDC",                 project: "pcmmdc" },
+  "p4a@pfas.pk":        { name: "P4A",                    project: "p4a" },
+  "fiedmc@pfas.pk":     { name: "FIEDMC",                 project: "fiedmc-m3ic" },
+  "fiedmc-sbp@pfas.pk": { name: "FIEDMC (SBP)",           project: "fiedmc-sbp" },
+  "energy@pfas.pk":     { name: "Energy Dept",            project: "energy" },
+  "fisheries@pfas.pk":  { name: "Fisheries Dept",         project: "shrimps" },
+  "cw-bot1@pfas.pk":    { name: "C&W (BOT-1)",            project: "bot1" },
+  "cw-bot2@pfas.pk":    { name: "C&W (BOT-2)",            project: "bot2" },
+  "cw-bot3@pfas.pk":    { name: "C&W (BOT-3)",            project: "bot3" },
+  "cw-bot4@pfas.pk":    { name: "C&W (BOT-4)",            project: "bot4" },
+  "cw-bot5@pfas.pk":    { name: "C&W (BOT-5)",            project: "bot5" },
+  "cw-om@pfas.pk":      { name: "C&W (18 O&M)",           project: "om-roads" },
+  "wildlife-b@pfas.pk": { name: "Wildlife (Bansra Gali)", project: "wildlife-bansra" },
+  "wildlife-c@pfas.pk": { name: "Wildlife (Changa)",      project: "wildlife-changa" },
+  "tam@pfas.pk":        { name: "TAM",                    project: "tam" },
+  "pha@pfas.pk":        { name: "PHA",                    project: "pha" },
+  "pbf@pfas.pk":        { name: "Punjab Benevolent",      project: "pbf" },
+  "finance@pfas.pk":    { name: "Finance Dept",           project: "punjab-onebill" },
+  "vss@pfas.pk":        { name: "Finance (VSS)",          project: "vss" },
+  "hed@pfas.pk":        { name: "HED",                    project: "hed" },
+  "phimc@pfas.pk":      { name: "PHIMC",                  project: "phimc" }
+};
+
+let auth0Client = null;
+
+async function initAuth0() {
+  auth0Client = await auth0.createAuth0Client({
+    domain: AUTH0_DOMAIN,
+    clientId: AUTH0_CLIENT_ID,
+    authorizationParams: {
+      redirect_uri: window.location.origin
+    },
+    cacheLocation: "localstorage"
+  });
+
+  // Check if returning from Auth0
+  if (window.location.search.includes("code=")) {
+    await auth0Client.handleRedirectCallback();
+    window.history.replaceState({}, document.title, "/");
+  }
+
+  const isAuthenticated = await auth0Client.isAuthenticated();
+  if (isAuthenticated) {
+    const user = await auth0Client.getUser();
+    const email = (user.email || "").toLowerCase();
+    const acc = EMAIL_PROJECT_MAP[email];
+    if (!acc) {
+      document.getElementById("loginError").textContent = "Your account is not linked to any PFAS project. Contact admin.";
+      document.getElementById("loginError").classList.add("show");
+      return;
+    }
+    document.getElementById("loginOverlay").classList.add("hidden");
+    document.getElementById("appShell").style.display = "block";
+    document.getElementById("userName").textContent = acc.name;
+    document.getElementById("userInitial").textContent = acc.name[0];
+    currentProjectId = acc.project;
+    renderAll();
+  }
+}
+
+function attemptLogin() {
+  // For Auth0 Universal Login - redirects to Auth0 hosted page
+  auth0Client.loginWithRedirect();
+}
+
+function logout() {
+  auth0Client.logout({
+    logoutParams: { returnTo: window.location.origin }
+  });
+}
+
+initAuth0();
+
+const PROJECTS = [
+  // ============ FISHERIES ============
+  {
+    id: "shrimps",
+    name: "Shrimps Estate Project",
+    client: "Fisheries Department",
+    type: "Leasing Model & Financial Feasibility",
+    health: "amber",
+    fee: "PKR 25 M",
+    phase: "Client Review",
+    progress: 62,
+    activeTasks: 4,
+    overdueTasks: 3,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/:f:/g/personal/hamza_naeem_pfas_pk/IgCqTpi_G5uURooyJBe2Wcx7AeHoAcmCRAJ-CBsxk5-Hsas?e=bM3UOd",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Shrimps%20Estate%20Project/Fisheries",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20Shrimps%20Estate%20Project%20%7C%20Review",
+    statusReport: "Team is finalising the <strong>second client presentation</strong> covering project's financial impact across the value chain. Site visit to Sargodha completed; <strong>Recommendations V1</strong> presented to client (14 May). Three deep-dive analyses underway: imported feed pricing, workforce-energy-processing, PL capacity & grow-out pond options.",
+    statusDate: "18 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Data Gathering", pct: 100, status: "green" },
+      { name: "Analysis", pct: 90, status: "amber" },
+      { name: "Client Review", pct: 50, status: "amber" },
+      { name: "Finalization", pct: 0, status: "grey" },
+      { name: "Payment", pct: 50, status: "amber" }
+    ],
+    team: [
+      { name: "Ammar Yasir", role: "Team Lead", email: "ammar.yasir@pfas.com.pk", color: "navy" },
+      { name: "Khalid Safdar", role: "Senior Analyst", email: "khalid.safdar@pfas.pk", color: "gold" },
+      { name: "Meiraj N. Khan", role: "Analyst", email: "meiraj.khan@pfas.pk", color: "green" }
+    ],
+    chat: [
+      { from: "them", sender: "Ammar Yasir", text: "Good morning! We're finalising the second presentation covering the financial impact of the value chain.", time: "Today, 10:42 AM" }
+    ]
+  },
+
+  // ============ C&W ROADS ============
+  {
+    id: "bot1",
+    name: "BOT-1 Depalpur-Pakpattan-Vehari Road",
+    client: "C&W Department",
+    type: "Dualization BOT-PPP",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Engagement & Mobilization",
+    progress: 12,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/CWRoadsBOT",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/BOT-1%20Depalpur-Pakpattan/C%26W%20Roads",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20BOT-1%20Discussion",
+    statusReport: "Engagement phase underway. Initial stakeholder mapping in progress with C&W Department.",
+    statusDate: "16 Jun 2026",
+    phases: [
+      { name: "Engagement & Mobilization", pct: 60, status: "green" },
+      { name: "Research & Diagnostic", pct: 0, status: "grey" },
+      { name: "Feasibility & Analysis", pct: 0, status: "grey" },
+      { name: "Approvals & Clearances", pct: 0, status: "grey" },
+      { name: "Procurement & Bidding", pct: 0, status: "grey" },
+      { name: "Contract Signing & Close", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Abdul Wahab", role: "Project Lead", email: "abdul.wahab@pfas.com.pk", color: "navy" },
+      { name: "Umar Paracha", role: "Analyst", email: "umar.paracha@pfas.com.pk", color: "gold" }
+    ],
+    chat: [
+      { from: "them", sender: "Abdul Wahab", text: "Initial mobilization meetings scheduled with C&W team for next week.", time: "16 Jun" }
+    ]
+  },
+
+  {
+    id: "bot2",
+    name: "BOT-2 Chiragabad-Jhang-Shorkot Road",
+    client: "C&W Department",
+    type: "Dualization BOT-PPP",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Engagement & Mobilization",
+    progress: 10,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/CWRoadsBOT",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/BOT-2%20Chiragabad-Jhang/C%26W%20Roads",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20BOT-2%20Discussion",
+    statusReport: "Engagement phase underway. Coordination with C&W on baseline traffic study scope.",
+    statusDate: "16 Jun 2026",
+    phases: [
+      { name: "Engagement & Mobilization", pct: 50, status: "green" },
+      { name: "Research & Diagnostic", pct: 0, status: "grey" },
+      { name: "Feasibility & Analysis", pct: 0, status: "grey" },
+      { name: "Approvals & Clearances", pct: 0, status: "grey" },
+      { name: "Procurement & Bidding", pct: 0, status: "grey" },
+      { name: "Contract Signing & Close", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Abdul Wahab", role: "Project Lead", email: "abdul.wahab@pfas.com.pk", color: "navy" },
+      { name: "Umar Paracha", role: "Analyst", email: "umar.paracha@pfas.com.pk", color: "gold" }
+    ],
+    chat: []
+  },
+
+  {
+    id: "bot3",
+    name: "BOT-3 Muzaffargarh-Alipur-TM Panah Road",
+    client: "C&W Department",
+    type: "Dualization BOT-PPP",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Engagement & Mobilization",
+    progress: 15,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/CWRoadsBOT",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/BOT-3%20Muzaffargarh-Alipur/C%26W%20Roads",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20BOT-3%20Discussion",
+    statusReport: "Engagement phase underway. Traffic data collection points being mapped.",
+    statusDate: "16 Jun 2026",
+    phases: [
+      { name: "Engagement & Mobilization", pct: 75, status: "green" },
+      { name: "Research & Diagnostic", pct: 0, status: "grey" },
+      { name: "Feasibility & Analysis", pct: 0, status: "grey" },
+      { name: "Approvals & Clearances", pct: 0, status: "grey" },
+      { name: "Procurement & Bidding", pct: 0, status: "grey" },
+      { name: "Contract Signing & Close", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Abdul Wahab", role: "Project Lead", email: "abdul.wahab@pfas.com.pk", color: "navy" },
+      { name: "Umar Paracha", role: "Analyst", email: "umar.paracha@pfas.com.pk", color: "gold" }
+    ],
+    chat: []
+  },
+
+  {
+    id: "bot4",
+    name: "BOT-4 Sahiwal-Samundari Road",
+    client: "C&W Department",
+    type: "Add Carriageway BOT-PPP",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Engagement & Mobilization",
+    progress: 10,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/CWRoadsBOT",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/BOT-4%20Sahiwal-Samundari/C%26W%20Roads",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20BOT-4%20Discussion",
+    statusReport: "Mobilization underway. Land-use and right-of-way studies being scoped.",
+    statusDate: "16 Jun 2026",
+    phases: [
+      { name: "Engagement & Mobilization", pct: 50, status: "green" },
+      { name: "Research & Diagnostic", pct: 0, status: "grey" },
+      { name: "Feasibility & Analysis", pct: 0, status: "grey" },
+      { name: "Approvals & Clearances", pct: 0, status: "grey" },
+      { name: "Procurement & Bidding", pct: 0, status: "grey" },
+      { name: "Contract Signing & Close", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Abdul Wahab", role: "Project Lead", email: "abdul.wahab@pfas.com.pk", color: "navy" },
+      { name: "Umar Paracha", role: "Analyst", email: "umar.paracha@pfas.com.pk", color: "gold" }
+    ],
+    chat: []
+  },
+
+  {
+    id: "bot5",
+    name: "BOT-5 Bahawalpur-Jhangra Sharqi Road",
+    client: "C&W Department",
+    type: "Add Carriageway BOT-PPP",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Engagement & Mobilization",
+    progress: 8,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/CWRoadsBOT",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/BOT-5%20Bahawalpur-Jhangra/C%26W%20Roads",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20BOT-5%20Discussion",
+    statusReport: "Mobilization underway. Baseline assessment scope being finalised with C&W team.",
+    statusDate: "16 Jun 2026",
+    phases: [
+      { name: "Engagement & Mobilization", pct: 40, status: "green" },
+      { name: "Research & Diagnostic", pct: 0, status: "grey" },
+      { name: "Feasibility & Analysis", pct: 0, status: "grey" },
+      { name: "Approvals & Clearances", pct: 0, status: "grey" },
+      { name: "Procurement & Bidding", pct: 0, status: "grey" },
+      { name: "Contract Signing & Close", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Abdul Wahab", role: "Project Lead", email: "abdul.wahab@pfas.com.pk", color: "navy" },
+      { name: "Umar Paracha", role: "Analyst", email: "umar.paracha@pfas.com.pk", color: "gold" }
+    ],
+    chat: []
+  },
+
+  {
+    id: "om-roads",
+    name: "18 O&M Roads PPP",
+    client: "C&W Department",
+    type: "Operations & Maintenance PPP",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Engagement & Mobilization",
+    progress: 18,
+    activeTasks: 1,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/CWRoadsBOT",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/18%20O%26M%20Roads/C%26W%20Roads",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%2018%20O%26M%20Roads%20Discussion",
+    statusReport: "18 roads O&M PPP scoping in progress. Asset condition baseline being compiled across all 18 candidate roads.",
+    statusDate: "16 Jun 2026",
+    phases: [
+      { name: "Engagement & Mobilization", pct: 90, status: "green" },
+      { name: "Research & Diagnostic", pct: 10, status: "amber" },
+      { name: "Feasibility & Analysis", pct: 0, status: "grey" },
+      { name: "Approvals & Clearances", pct: 0, status: "grey" },
+      { name: "Procurement & Bidding", pct: 0, status: "grey" },
+      { name: "Contract Signing & Close", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Abdul Wahab", role: "Project Lead", email: "abdul.wahab@pfas.com.pk", color: "navy" }
+    ],
+    chat: []
+  },
+
+  // ============ PCMMDC ============
+  {
+    id: "pcmmdc",
+    name: "HR Manual & Policy Compendium",
+    client: "PCMMDC",
+    type: "HR Restructuring Advisory",
+    health: "amber",
+    fee: "PKR 5.5 M",
+    phase: "Policy Drafting",
+    progress: 67,
+    activeTasks: 4,
+    overdueTasks: 4,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/:f:/g/personal/hamza_naeem_pfas_pk/IgAIioMgxuNmSIiqijomYjrCAUCzUlrnmB-1_i78v2L2a-M?e=QWFKTg",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/HR%20Manual%20%26%20Policy%20Compendium/PCMMDC",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20PCMMDC%20HR%20Manual%20%7C%20Review",
+    statusReport: "On <strong>17 Jun</strong>, HR Expert (Qamar Sb) met GM HR PCMMDC to discuss finalisation of the HR Manual with PCMMDC's comments incorporated. A follow-up session held <strong>today (18 Jun)</strong> continues that discussion. Recent context: CEO PCMMDC working session held 3 Jun, all policy changes locked with GM HR (Mr. Jazib) on 5 Jun. The draft HR Manual was delivered with covering letter and Invoice 3.",
+    statusDate: "18 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Diagnostic Review", pct: 100, status: "green" },
+      { name: "Structure & Pay Reform", pct: 100, status: "green" },
+      { name: "Policy Drafting", pct: 75, status: "amber" },
+      { name: "Finalization", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Hashim Riaz", role: "Project Manager", email: "hashim.riaz@pfas.com.pk", color: "navy" },
+      { name: "Muhammad Fahad Tanveer", role: "PM Team Lead", email: "fahad.tanveer@pfas.pk", color: "gold" },
+      { name: "Qamar Sb", role: "HR Expert (Consultant)", email: "—", color: "purple" }
+    ],
+    chat: [
+      { from: "them", sender: "Hashim Riaz", text: "Today's update: HR Expert met GM HR PCMMDC on 17 Jun. Follow-up session today to continue.", time: "Today, 11:21 AM" }
+    ]
+  },
+
+  // ============ FIEDMC ============
+  {
+    id: "fiedmc-m3ic",
+    name: "M3IC Commercial Plot Sale",
+    client: "FIEDMC",
+    type: "Optimal Fund Utilisation Advisory",
+    health: "green",
+    fee: "PKR 5.6 M",
+    phase: "Stakeholder Engagement",
+    progress: 45,
+    activeTasks: 3,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/:f:/g/personal/hamza_naeem_pfas_pk/IgBsumuXRajrR68p1lVoyk9fAXSzT8AjpCaraSizNyGvS-A?e=gFo5iI",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/M3IC%20Commercial%20Plot%20Sale/FIEDMC",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20FIEDMC%20M3IC%20%7C%20Review",
+    statusReport: "Stakeholder engagement phase progressing well. <strong>5 of 7 planned interviews</strong> completed. Strategy framework v1 drafted and under internal review.",
+    statusDate: "16 Jun 2026",
+    phases: [
+      { name: "Contract Signing", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Stakeholder Engagement", pct: 70, status: "green" },
+      { name: "Strategy Formulation", pct: 10, status: "amber" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Muhammad Fahad Tanveer", role: "Project Lead", email: "fahad.tanveer@pfas.pk", color: "navy" },
+      { name: "Hashim Riaz", role: "Senior Advisor", email: "hashim.riaz@pfas.com.pk", color: "gold" }
+    ],
+    chat: [
+      { from: "them", sender: "Fahad Tanveer", text: "Stakeholder engagement progressing well. 5 of 7 interviews complete.", time: "Today, 12:30 PM" }
+    ]
+  },
+
+  {
+    id: "fiedmc-sbp",
+    name: "Strategic Business Plan",
+    client: "FIEDMC",
+    type: "Strategic Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Stakeholder Engagement",
+    progress: 30,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/:f:/g/personal/hamza_naeem_pfas_pk/IgBsumuXRajrR68p1lVoyk9fAXSzT8AjpCaraSizNyGvS-A?e=gFo5iI",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Strategic%20Business%20Plan/FIEDMC",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20FIEDMC%20SBP",
+    statusReport: "Strategic Business Plan engagement underway alongside M3IC project. Initial environmental scan completed.",
+    statusDate: "14 Jun 2026",
+    phases: [
+      { name: "Contract Signing", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Stakeholder Engagement", pct: 40, status: "amber" },
+      { name: "Strategy Formulation", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Muhammad Fahad Tanveer", role: "Project Lead", email: "fahad.tanveer@pfas.pk", color: "navy" },
+      { name: "Hashim Riaz", role: "Senior Advisor", email: "hashim.riaz@pfas.com.pk", color: "gold" }
+    ],
+    chat: []
+  },
+
+  // ============ WILDLIFE ============
+  {
+    id: "wildlife-bansra",
+    name: "Bansra Gali Wildlife",
+    client: "Wildlife Department",
+    type: "Site Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Onboarding",
+    progress: 15,
+    activeTasks: 1,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/Wildlife",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Bansra%20Gali%20Wildlife/Wildlife",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20Bansra%20Gali",
+    statusReport: "Onboarding phase. Initial scoping discussions with Wildlife Department in progress.",
+    statusDate: "12 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 75, status: "green" },
+      { name: "Team Mobilization", pct: 0, status: "grey" },
+      { name: "Data Gathering", pct: 0, status: "grey" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [],
+    chat: []
+  },
+
+  {
+    id: "wildlife-changa",
+    name: "Changa Manga Wildlife",
+    client: "Wildlife Department",
+    type: "Site Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Onboarding",
+    progress: 12,
+    activeTasks: 1,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/Wildlife",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Changa%20Manga%20Wildlife/Wildlife",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20Changa%20Manga",
+    statusReport: "Onboarding phase. Initial scoping discussions with Wildlife Department in progress.",
+    statusDate: "12 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 60, status: "green" },
+      { name: "Team Mobilization", pct: 0, status: "grey" },
+      { name: "Data Gathering", pct: 0, status: "grey" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [],
+    chat: []
+  },
+
+  // ============ TAM ============
+  {
+    id: "tam",
+    name: "Time Travel Theme Park",
+    client: "Tourism, Archaeology & Museums",
+    type: "Project Advisory",
+    health: "amber",
+    fee: "PKR TBD",
+    phase: "Data Gathering",
+    progress: 35,
+    activeTasks: 2,
+    overdueTasks: 1,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/TAM",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Time%20Travel%20Theme%20Park/TAM",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20TAM%20Theme%20Park",
+    statusReport: "Project mobilized. Data gathering on visitor patterns, archaeological constraints, and revenue benchmarks underway.",
+    statusDate: "15 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Data Gathering", pct: 50, status: "amber" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "Client Review", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Ammar Yasir", role: "Team Lead", email: "ammar.yasir@pfas.com.pk", color: "navy" },
+      { name: "Khalid Safdar", role: "Senior Analyst", email: "khalid.safdar@pfas.pk", color: "gold" },
+      { name: "Meiraj N. Khan", role: "Analyst", email: "meiraj.khan@pfas.pk", color: "green" }
+    ],
+    chat: []
+  },
+
+  // ============ PHA ============
+  {
+    id: "pha",
+    name: "PHA Lahore Financial Sustainability",
+    client: "Parks & Horticulture Authority",
+    type: "Financial Sustainability Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Data Gathering",
+    progress: 28,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/PHA",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/PHA%20Lahore/PHA",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20PHA%20Lahore",
+    statusReport: "Data gathering underway. Revenue stream analysis and CapEx benchmarking in progress.",
+    statusDate: "14 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Data Gathering", pct: 45, status: "amber" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Hashim Riaz", role: "Project Lead", email: "hashim.riaz@pfas.com.pk", color: "navy" }
+    ],
+    chat: []
+  },
+
+  // ============ PUNJAB BENEVOLENT FUND ============
+  {
+    id: "pbf",
+    name: "Employees Welfare Fund",
+    client: "Punjab Benevolent Fund",
+    type: "Welfare Fund Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Data Gathering",
+    progress: 32,
+    activeTasks: 3,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/PBF",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Employees%20Welfare%20Fund/Punjab%20Benevolent%20Fund",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20PBF%20Welfare",
+    statusReport: "Data gathering underway. Beneficiary database and historical disbursement analysis in progress.",
+    statusDate: "13 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Data Gathering", pct: 50, status: "amber" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [],
+    chat: []
+  },
+
+  // ============ FINANCE DEPARTMENT ============
+  {
+    id: "punjab-onebill",
+    name: "Punjab One Bill Study",
+    client: "Finance Department",
+    type: "Revenue Consolidation Study",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Phase 1 - DIAGNOSTICS & RECEIPT CLASSIFICATION",
+    progress: 25,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/Finance",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Punjab%20One%20Bill%20Study/Finance%20Department",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20Punjab%20One%20Bill",
+    statusReport: "Phase 1 diagnostics & receipt classification underway. Mapping of existing receipt heads and process flows in progress.",
+    statusDate: "15 Jun 2026",
+    phases: [
+      { name: "Pre-Contract Signing", pct: 100, status: "green" },
+      { name: "Phase 1 — Diagnostics", pct: 40, status: "amber" },
+      { name: "Phase 2 — Institutional & Legal", pct: 0, status: "grey" },
+      { name: "Phase 3 — Final Study", pct: 0, status: "grey" },
+      { name: "Payments", pct: 0, status: "grey" }
+    ],
+    team: [],
+    chat: []
+  },
+
+  {
+    id: "vss",
+    name: "VSS Engagement",
+    client: "Finance Department",
+    type: "Voluntary Separation Scheme Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Diagnostic Review",
+    progress: 20,
+    activeTasks: 1,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/Finance",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/VSS%20Engagement/Finance%20Department",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20VSS%20Engagement",
+    statusReport: "Diagnostic review of existing workforce structures underway across pilot departments.",
+    statusDate: "13 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Diagnostic Review", pct: 50, status: "amber" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [],
+    chat: []
+  },
+
+  // ============ ENERGY ============
+  {
+    id: "energy",
+    name: "PMW Strategic Design",
+    client: "Energy Department",
+    type: "Project Management Wing Restructuring",
+    health: "amber",
+    fee: "PKR 7.074 M",
+    phase: "Contract Signing",
+    progress: 15,
+    activeTasks: 2,
+    overdueTasks: 1,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/:f:/g/personal/hamza_naeem_pfas_pk/IgAP0fwlxoZcSaBjo-3Nhe-8ASdBglItdkiDqd329IHzhC0?e=5ekc3e",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/PMW%20Strategic%20Design/Energy",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20Energy%20PMW",
+    statusReport: "Contract documents shared with the client's legal team for review. Awaiting confirmation on contract sign-off.",
+    statusDate: "17 Jun 2026",
+    phases: [
+      { name: "Contract Signing", pct: 50, status: "amber" },
+      { name: "Diagnostic (D-I)", pct: 0, status: "grey" },
+      { name: "Institutional Framework (D-II)", pct: 0, status: "grey" },
+      { name: "Final Study (D-III)", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Muhammad Fahad Tanveer", role: "Project Lead", email: "fahad.tanveer@pfas.pk", color: "navy" },
+      { name: "Hashim Riaz", role: "Senior Advisor", email: "hashim.riaz@pfas.com.pk", color: "gold" },
+      { name: "Awais Khan", role: "Analyst", email: "awais.khan@pfas.com.pk", color: "green" }
+    ],
+    chat: [
+      { from: "them", sender: "Fahad Tanveer", text: "Contract documents shared with your legal team. Awaiting confirmation.", time: "Yesterday" }
+    ]
+  },
+
+  // ============ P4A ============
+  {
+    id: "p4a",
+    name: "Tertiary Care General Hospital",
+    client: "Punjab Aid for Affected Areas (P4A)",
+    type: "Economic & Financial Feasibility",
+    health: "amber",
+    fee: "PKR 29.825 M",
+    phase: "Contract Signing",
+    progress: 20,
+    activeTasks: 4,
+    overdueTasks: 3,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/:f:/g/personal/hamza_naeem_pfas_pk/IgAYhriqzbPgS6GsZaO8JcsOAdNku4tGqSB5C6wZ6Tr5tE4?e=mpwXk0",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/Tertiary%20Care%20Hospital/P4A",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20P4A%20Tertiary%20Care",
+    statusReport: "Currently a <strong>hold-up</strong> following P4A team's email of 9 Jun requesting PFAS revise the proposal downward. PFAS's review of documents indicates <strong>considerable rework is warranted</strong> due to major changes in macroeconomic conditions, healthcare sector evolution in Punjab (SHI insurance packages), PSER changes, land costs. Detailed response prepared by Team Lead. Healthcare consultant Shehzad Leghari engaged 5 Jun.",
+    statusDate: "15 Jun 2026",
+    phases: [
+      { name: "Contract Signing", pct: 67, status: "amber" },
+      { name: "Team Mobilization", pct: 0, status: "red" },
+      { name: "PPP Structuring", pct: 0, status: "grey" },
+      { name: "Financial Feasibility", pct: 0, status: "grey" },
+      { name: "Concept Note & TA", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Hashim Riaz", role: "Team Lead", email: "hashim.riaz@pfas.com.pk", color: "navy" },
+      { name: "Muhammad Fahad Tanveer", role: "PM Team", email: "fahad.tanveer@pfas.pk", color: "gold" },
+      { name: "Shehzad Leghari", role: "Healthcare Consultant", email: "—", color: "purple" }
+    ],
+    chat: [
+      { from: "them", sender: "Hashim Riaz", text: "We've engaged Shehzad Leghari as the healthcare consultant. He'll share a proposal this week.", time: "Mon, 11:00 AM" }
+    ]
+  },
+
+  // ============ HIGHER EDUCATION ============
+  {
+    id: "hed",
+    name: "Higher Education Department Advisory",
+    client: "Higher Education Department",
+    type: "Strategic Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Data Gathering",
+    progress: 22,
+    activeTasks: 2,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/HED",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/HED%20Engagement/Higher%20Education%20Dept",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20HED",
+    statusReport: "Data gathering phase underway. University-level financial benchmarking in progress.",
+    statusDate: "13 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Data Gathering", pct: 40, status: "amber" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [],
+    chat: []
+  },
+
+  // ============ PHIMC ============
+  {
+    id: "phimc",
+    name: "Economic & Financial Feasibility - 6 Hospitals",
+    client: "PHIMC",
+    type: "Healthcare Feasibility Advisory",
+    health: "green",
+    fee: "PKR TBD",
+    phase: "Data Gathering",
+    progress: 30,
+    activeTasks: 3,
+    overdueTasks: 0,
+    onedriveProject: "https://pfaspk-my.sharepoint.com/sites/PHIMC",
+    teamsChannelDeepLink: "https://teams.microsoft.com/l/channel/6%20Hospitals%20Feasibility/PHIMC",
+    teamsScheduleMeeting: "https://teams.microsoft.com/l/meeting/new?subject=PFAS%20%E2%80%94%20PHIMC%206%20Hospitals",
+    statusReport: "Data gathering underway across the 6 hospital sites. Catchment analysis and demand forecasting in progress. PHIMC data request letter sent (revised version, after Mr. Afridi's direction).",
+    statusDate: "13 Jun 2026",
+    phases: [
+      { name: "Onboarding", pct: 100, status: "green" },
+      { name: "Team Mobilization", pct: 100, status: "green" },
+      { name: "Data Gathering", pct: 60, status: "amber" },
+      { name: "Analysis", pct: 0, status: "grey" },
+      { name: "PPP Structuring", pct: 0, status: "grey" },
+      { name: "Closure", pct: 0, status: "grey" }
+    ],
+    team: [
+      { name: "Hashim Riaz", role: "Team Lead", email: "hashim.riaz@pfas.com.pk", color: "navy" }
+    ],
+    chat: []
+  }
+];
+
+let currentProjectId = "pcmmdc";
+
+function renderAll() {
+  const p = PROJECTS.find(x => x.id === currentProjectId);
+  renderHeader(p);
+  renderKPIs(p);
+  renderStatusReport(p);
+  renderPhases(p);
+  renderTeam(p);
+  renderActions(p);
+  renderChat(p);
+}
+
+function renderHeader(p) {
+  const healthLabel = p.health === "green" ? "GREEN" : p.health === "amber" ? "AMBER" : "RED";
+  document.getElementById("projectHeader").innerHTML = `
+    <div class="ph-top">
+      <div class="ph-title-block">
+        <div class="ph-eyebrow">${p.type}</div>
+        <div class="ph-title">${p.name}</div>
+      </div>
+      <div class="health-chip health-${p.health}">● ${healthLabel}</div>
+    </div>
+    <div class="ph-meta">
+      <span><strong>Client:</strong> ${p.client}</span>
+      <span><strong>Current Phase:</strong> ${p.phase}</span>
+      <span><strong>Team Size:</strong> ${p.team.length}</span>
+    </div>
+  `;
+}
+
+function renderKPIs(p) {
+  document.getElementById("kpiRow").innerHTML = `
+    <div class="kpi k-progress">
+      <div class="kpi-label">Project Progress</div>
+      <div class="kpi-value">${p.progress}%</div>
+      <div class="kpi-sub">Overall completion</div>
+    </div>
+    <div class="kpi k-tasks">
+      <div class="kpi-label">Active Tasks</div>
+      <div class="kpi-value">${p.activeTasks}</div>
+      <div class="kpi-sub">${p.overdueTasks} need attention</div>
+    </div>
+    <div class="kpi k-phase">
+      <div class="kpi-label">Current Phase</div>
+      <div class="kpi-value">${p.phase}</div>
+      <div class="kpi-sub">In progress</div>
+    </div>
+    <div class="kpi k-fee">
+      <div class="kpi-label">Engagement Value</div>
+      <div class="kpi-value">${p.fee}</div>
+      <div class="kpi-sub">Total advisory fee</div>
+    </div>
+  `;
+}
+
+function renderStatusReport(p) {
+  document.getElementById("statusReport").innerHTML = `
+    <div class="sr-meta">Last 10 days · Updated ${p.statusDate}</div>
+    ${p.statusReport}
+  `;
+}
+
+function renderPhases(p) {
+  document.getElementById("phaseList").innerHTML = p.phases.map(ph => `
+    <div class="phase-row">
+      <div class="phase-head">
+        <div class="phase-name">${ph.name}</div>
+        <div class="phase-pct pct-${ph.status}">${ph.pct}%</div>
+      </div>
+      <div class="phase-bar b-${ph.status}"><span style="width:${ph.pct}%"></span></div>
+    </div>
+  `).join("");
+}
+
+function renderTeam(p) {
+  document.getElementById("teamGrid").innerHTML = p.team.map(m => {
+    const initials = m.name.split(" ").map(n => n[0]).join("").substring(0, 2);
+    return `
+      <div class="member-card">
+        <div class="avatar av-${m.color}">${initials}</div>
+        <div class="member-info">
+          <div class="member-name">${m.name}</div>
+          <div class="member-role">${m.role}</div>
+          <div class="member-email">${m.email}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+function renderActions(p) {
+  document.getElementById("actionsGrid").innerHTML = `
+    <a class="action-btn" href="${p.onedriveProject}" target="_blank">
+      <div class="action-icon ai-blue">📁</div>
+      <div class="action-text">
+        <div class="action-title">Shared Documents</div>
+        <div class="action-desc">Client Communication folder</div>
+      </div>
+    </a>
+    <a class="action-btn" href="${p.teamsScheduleMeeting}" target="_blank">
+      <div class="action-icon ai-green">📅</div>
+      <div class="action-text">
+        <div class="action-title">Schedule Meeting</div>
+        <div class="action-desc">New Teams meeting · pre-invited</div>
+      </div>
+    </a>
+    <a class="action-btn" href="${p.onedriveProject}" target="_blank">
+      <div class="action-icon ai-purple">📝</div>
+      <div class="action-text">
+        <div class="action-title">Meeting Minutes</div>
+        <div class="action-desc">MoMs folder · OneDrive</div>
+      </div>
+    </a>
+    <a class="action-btn" href="${p.onedriveProject}" target="_blank">
+      <div class="action-icon ai-orange">📤</div>
+      <div class="action-text">
+        <div class="action-title">Submit Data / Document</div>
+        <div class="action-desc">Upload to data-from-client folder</div>
+      </div>
+    </a>
+    <a class="action-btn" href="#" onclick="alert('Latest status update is shown live above.'); return false;">
+      <div class="action-icon ai-pink">📊</div>
+      <div class="action-text">
+        <div class="action-title">Status Report</div>
+        <div class="action-desc">Live · see above</div>
+      </div>
+    </a>
+    <a class="action-btn" href="${p.onedriveProject}" target="_blank">
+      <div class="action-icon ai-cyan">💰</div>
+      <div class="action-text">
+        <div class="action-title">Invoices & Payments</div>
+        <div class="action-desc">Payments folder · OneDrive</div>
+      </div>
+    </a>
+  `;
+}
+
+function renderChat(p) {
+  document.getElementById("chatTitle").textContent = `${p.client} ↔ PFAS Team`;
+  document.getElementById("chatCta").href = p.teamsChannelDeepLink;
+  document.getElementById("chatBody").innerHTML = p.chat.map(m => {
+    if (m.from === "me") {
+      return `<div class="msg msg-me">${m.text}<div class="msg-time">${m.time}</div></div>`;
+    } else {
+      return `<div style="display: flex; flex-direction: column; align-items: flex-start;"><div class="msg-sender">${m.sender}</div><div class="msg msg-them">${m.text}<div class="msg-time" style="color: var(--slate-light);">${m.time}</div></div></div>`;
+    }
+  }).join("");
+  const body = document.getElementById("chatBody");
+  body.scrollTop = body.scrollHeight;
+}
+
+setInterval(() => {
+  const dot = document.querySelector(".live-dot");
+  if (dot) dot.style.opacity = (Math.random() > 0.5) ? "1" : "0.4";
+}, 1500);
+</script>
+
+</body>
+</html>
