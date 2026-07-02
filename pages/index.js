@@ -1118,61 +1118,30 @@ function BookMeetingPanel({ project }) {
 }
 
 // ── SharePoint folder map ────────────────────────────────────────────────────
-// Each project slug maps to its 4 client-facing SharePoint sub-folders, all
-// under: {project root}/Data for client access/{N}. {Folder Name}
-//   sharedDocs      -> "Data for client access" (root folder)  (Project Documents quick action)
-//   uploadDoc        -> "2. Received from Client"     (Upload Document quick action)
-//   meetingMinutes    -> "3. Meeting Minutes and Notes" (Meeting Minutes quick action)
-//   invoices          -> "Invoices and Payments"      (sits at project root, sibling
-//                                                       to "Data for client access" —
-//                                                       Invoices & Payments quick action)
-//
-// Folder structure confirmed present across all 21 projects (site:
-// pfaspk.sharepoint.com/sites/PFAS-PMO). Folders may be empty pending file
-// uploads — that's expected and does not affect the links below, which point
-// at the correct destination regardless of current contents.
+// DYNAMIC RESOLUTION: every quick action calls /api/sp-folder, which looks up
+// the real folder by NAME via Graph API at click time. Matching ignores
+// number prefixes ("2. Received from Client" == "Received from Client").
+// Fallback chain: exact subfolder -> "Data for client access" -> project root.
+// A dead link is impossible. See pages/api/sp-folder.js for the resolver.
 
-const SHAREPOINT_BASE = "https://pfaspk.sharepoint.com/sites/PFAS-PMO/Shared Documents/PFAS Operations/All Clients";
+const SHAREPOINT_FOLDERS_SLUGS = [
+  "wildlife-bansra","wildlife-changa","punjab-onebill","twilight",
+  "bot1","bot2","bot3","bot4","bot5","om-roads",
+  "pcmmdc","p4a","fiedmc-m3ic","fiedmc-sbp","tam","pha","pbf",
+  "energy","hed","phimc","lda","shrimps",
+];
 
-// Helper: builds the 4 sub-folder URLs for a project that already HAS the
-// full "Data for client access" structure built (verified pattern).
-function dataForClientAccess(deptPath, projectPath, opts = {}) {
-  const root = `${SHAREPOINT_BASE}/${deptPath}/${projectPath}`;
-  return {
-    sharedDocs:      `${root}/Data for client access`,
-    uploadDoc:        `${root}/Data for client access/${opts.receivedFolder || "2. Received from Client"}`,
-    meetingMinutes:    `${root}/Data for client access/${opts.minutesFolder || "3. Meeting Minutes and Notes"}`,
-    // "Invoices and Payments" lives as its own folder at the project root,
-    // sibling to "Data for client access" — confirmed pattern across all
-    // projects (Bansra Gali, Changa Manga, and verified live by user).
-    invoices:          `${root}/${opts.invoicesFolder || "Invoices and Payments"}`,
-  };
-}
-
-const SHAREPOINT_FOLDERS = {
-  "wildlife-bansra": dataForClientAccess("Wildlife", "Bansara Gali"),
-  "wildlife-changa": dataForClientAccess("Wildlife", "Changa Manga"),
-  "punjab-onebill":  dataForClientAccess("Finance Department", "Punjab One Bill Study"),
-  "bot1":            dataForClientAccess("C&W", "BOT-1 Depalpur-Pakpattan-Vehari"),
-  "bot2":            dataForClientAccess("C&W", "BOT-2 Chiragabad-Jhang-Shorkot"),
-  "bot3":            dataForClientAccess("C&W", "BOT-3 Muzaffargarh-Alipur-TM"),
-  "bot4":            dataForClientAccess("C&W", "BOT-4 Sahiwal Samundari"),
-  "bot5":            dataForClientAccess("C&W", "BOT 5 Bahawalpur-Jhangra sharqi Road"),
-  "om-roads":        dataForClientAccess("C&W", "18 O&M Roads-PPP"),
-  "pcmmdc":          dataForClientAccess("PCMMDC", "HR Manual"),
-  "p4a":             dataForClientAccess("P4A", "PPP Structure Optimisation and Economic & Financial Feasibility Advisory -  Tertiary Care General Hospital"),
-  "fiedmc-m3ic":     dataForClientAccess("FIEDMC", "Optimal Fund Utilisation of M3IC Commercial Plot Sale Proceeds"),
-  "fiedmc-sbp":      dataForClientAccess("FIEDMC", "Strategic Business Plan"),
-  "tam":             dataForClientAccess("TAM", "Time Travel Park"),
-  "pha":             dataForClientAccess("PHA", "PHA"),
-  "pbf":             dataForClientAccess("Punjab Benevolent Fund", "Punjab Govt Employees welfare fund"),
-  "twilight":         dataForClientAccess("Finance Department", "Project Twilight"),
-  "energy":          dataForClientAccess("Energy Department", "Strategic Assessment & Design of a Project Management Wing"),
-  "hed":             dataForClientAccess("Higher Education Department", "Higher Education Department"),
-  "phimc":           dataForClientAccess("PHIMC", "6 Hospitals Feasibility"),
-  "lda":             dataForClientAccess("LDA", "Economic & Financial Feasibility Advisory -  4 Hospitals"),
-  "shrimps":         dataForClientAccess("Fisheries", "Shrimps Estate Project"),
-};
+// Every quick action resolves the REAL folder by name at click time via
+// /api/sp-folder (Graph API lookup, numbering-agnostic, always falls back
+// to the project root — never a dead link).
+const SHAREPOINT_FOLDERS = Object.fromEntries(
+  SHAREPOINT_FOLDERS_SLUGS.map(slug => [slug, {
+    sharedDocs:     `/api/sp-folder?slug=${slug}&action=docs`,
+    uploadDoc:      `/api/sp-folder?slug=${slug}&action=upload`,
+    meetingMinutes: `/api/sp-folder?slug=${slug}&action=minutes`,
+    invoices:       `/api/sp-folder?slug=${slug}&action=invoices`,
+  }])
+);
 
 // Returns the 4 quick-action URLs for a project, falling back to the
 // project's existing onedriveUrl (or "#") if the slug isn't mapped at all.
