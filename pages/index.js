@@ -799,6 +799,13 @@ const CLIENT_REPS = {
     email:        "gm.hr@pcmmdc.punjab.gov.pk",
     contact:      "+92-321-8400252",
   },
+  "tam": {
+    name:         "Syed Waqas Javed",
+    designation:  "Secretary",
+    organization: "Tourism, Archaeology & Museums Department, Government of the Punjab",
+    email:        "syed.waqasjaved@gmail.com",
+    contact:      "+92-300-4009309",
+  },
 };
 
 // ── Team grid ─────────────────────────────────────────────────────────────────
@@ -889,7 +896,7 @@ function ClientRepCard({ rep }) {
   const waHref   = waNumber ? `https://wa.me/${waNumber}` : null;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0, maxWidth: 340 }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
         <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
           {initials}
@@ -1157,27 +1164,27 @@ function BookMeetingPanel({ project }) {
       className="section-card teams-meeting-card"
       style={{
         ...CARD,
-        height: "100%",
         display: "flex",
         flexDirection: "column",
         textDecoration: "none",
         cursor: "pointer",
+        padding: 16,
       }}
     >
       <div style={SECTION_TITLE}><span style={TITLE_BAR} />Book a Meeting</div>
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, flex: 1, padding: "12px 8px 4px" }}>
-        {/* Microsoft Teams glyph — full color, continuously animated */}
-        <div className="teams-icon-pop" style={{ width: 92, height: 92, display: "flex", alignItems: "center", justifyContent: "center" }}>
-          <svg width="92" height="92" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, padding: "8px 4px 4px" }}>
+        {/* Microsoft Teams glyph — smaller */}
+        <div className="teams-icon-pop" style={{ width: 54, height: 54, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <svg width="54" height="54" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
             <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v0c0,159.084-118.929,294.296-277.083,310.6-39.083-13.667-81.166-21.083-125-21.083-83.333,0-160.583,27.083-223,72.917v-377.417C1603.75,824.792,1554.637,777.5,1554.637,777.5Z" transform="translate(-128.317 -350.083)"/>
             <circle fill="#5059C9" cx="1746.583" cy="240.75" r="240.75"/>
             <path fill="#7B83EB" opacity="1" d="M1183.083,777.5H707.37c-54.391,0-98.483,44.092-98.483,98.483v500.953c0,278.604,225.871,504.475,504.475,504.475h0c278.604,0,504.475-225.871,504.475-504.475V875.983C1617.837,821.592,1573.745,777.5,1519.354,777.5Z" transform="translate(-128.317 -350.083)"/>
             <circle fill="#7B83EB" cx="945.417" cy="240.75" r="240.75"/>
           </svg>
         </div>
-        <div style={{ fontSize: 14.5, fontWeight: 700, color: "#1E293B" }}>Schedule Meeting</div>
-        <div style={{ fontSize: 11.5, color: "#94A3B8" }}>with PFAS team</div>
+        <div style={{ fontSize: 13.5, fontWeight: 700, color: "#1E293B" }}>Schedule Meeting</div>
+        <div style={{ fontSize: 11, color: "#94A3B8" }}>with PFAS team</div>
       </div>
     </a>
   );
@@ -1653,6 +1660,17 @@ export default function ClientPortal() {
           .hero-title { font-size: 17px !important; }
         }
 
+        @media (max-width: 1180px) and (min-width: 861px) {
+          /* Tablet: 3-col row (team | client | meeting) becomes 2-col
+             with meeting dropping below the team+client pair */
+          .team-meeting-row {
+            grid-template-columns: 1fr 1fr !important;
+          }
+          .team-meeting-row > :last-child {
+            grid-column: 1 / -1 !important;
+          }
+        }
+
         @media (max-width: 860px) {
           .team-meeting-row { grid-template-columns: 1fr !important; }
         }
@@ -1768,22 +1786,39 @@ export default function ClientPortal() {
             <div>
               <KpiRow project={project} />
 
-              <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 18, alignItems: "stretch", marginBottom: 18 }} className="team-meeting-row">
+              {/* Row: PFAS Team | Client Representative | Book a Meeting */}
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: CLIENT_REPS[projectSlug]
+                    ? "1.6fr 1.2fr 0.9fr"
+                    : "2fr 1fr",
+                  gap: 16,
+                  alignItems: "stretch",
+                  marginBottom: 18,
+                }}
+                className="team-meeting-row"
+              >
+                {/* PFAS Advisory Team */}
                 <SectionCard title="Your PFAS Advisory Team" style={{ marginBottom: 0 }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                    <TeamGrid team={filterTeamForProject(project.team, projectSlug)} />
-                    {CLIENT_REPS[projectSlug] && (
-                      <div>
-                        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: "#0E7C66", marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#0E7C66" }} />
-                          Client Representative
-                        </div>
-                        <ClientRepCard rep={CLIENT_REPS[projectSlug]} />
-                      </div>
-                    )}
-                  </div>
+                  <TeamGrid team={filterTeamForProject(project.team, projectSlug)} />
                 </SectionCard>
 
+                {/* Client Representative — only when project has one */}
+                {CLIENT_REPS[projectSlug] && (
+                  <SectionCard
+                    title="Client Representative"
+                    style={{
+                      marginBottom: 0,
+                      background: "linear-gradient(180deg, #F0FDF9 0%, #FFFFFF 100%)",
+                      borderTop: "3px solid #0E7C66",
+                    }}
+                  >
+                    <ClientRepCard rep={CLIENT_REPS[projectSlug]} />
+                  </SectionCard>
+                )}
+
+                {/* Book a Meeting — compact */}
                 <BookMeetingPanel project={project} />
               </div>
 
