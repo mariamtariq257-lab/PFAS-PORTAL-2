@@ -788,19 +788,6 @@ function filterTeamForProject(team, slug) {
   );
 }
 
-// ── Client Representatives (per-project) ────────────────────────────────────
-// One primary client-side contact per project. Only projects listed here get
-// a "Client Representative" card. Add more entries later as needed.
-const CLIENT_REPS = {
-  "pcmmdc": {
-    name:         "Jazib Saeed Khan",
-    designation:  "GM HR & Admin",
-    organization: "PCMMDC",
-    email:        "gm.hr@pcmmdc.punjab.gov.pk",
-    contact:      "+92-321-8400252",
-  },
-};
-
 // ── Team grid ─────────────────────────────────────────────────────────────────
 // Converts Pakistani number to wa.me format: "0346-6991919" → "923466991919"
 function toWhatsAppNumber(raw) {
@@ -874,59 +861,6 @@ function TeamGrid({ team }) {
           </div>
         );
       })}
-    </div>
-  );
-}
-
-// ── Client Representative card ─────────────────────────────────────────────
-// Renders a single client-side contact for a project. Only renders if the
-// project's slug has an entry in CLIENT_REPS. Same visual language as the
-// PFAS team members but tinted teal to distinguish "client side" from "PFAS side".
-function ClientRepCard({ rep }) {
-  if (!rep) return null;
-  const initials = rep.name.split(" ").map(n => n[0]).join("").substring(0, 2);
-  const waNumber = toWhatsAppNumber(rep.contact);
-  const waHref   = waNumber ? `https://wa.me/${waNumber}` : null;
-
-  return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0, maxWidth: 340 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-        <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
-          {initials}
-        </div>
-        <div style={{ minWidth: 0, flex: 1 }}>
-          <div style={{ fontWeight: 700, fontSize: 15, color: "#1E293B", lineHeight: 1.25 }}>{rep.name}</div>
-          <div style={{ fontSize: 12.5, color: "#64748B", lineHeight: 1.35, marginTop: 2 }}>{rep.designation}</div>
-          {rep.organization && (
-            <div style={{ fontSize: 11, color: "#0E7C66", fontWeight: 600, letterSpacing: 0.3, textTransform: "uppercase", marginTop: 3 }}>{rep.organization}</div>
-          )}
-        </div>
-      </div>
-      <div style={{ display: "flex", flexDirection: "column", gap: 5, paddingTop: 11, borderTop: "1px solid #F1F5F9" }}>
-        {rep.email && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, minWidth: 0 }}>
-            <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="2" y="4" width="20" height="16" rx="3" fill="#0E7C66" fillOpacity="0.12" stroke="#0E7C66" strokeWidth="1.6"/>
-                <path d="M3 6l9 6 9-6" stroke="#0E7C66" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </span>
-            <a href={`mailto:${rep.email}`} style={{ color: "#0E7C66", textDecoration: "none", overflowWrap: "anywhere", wordBreak: "break-word", fontWeight: 600 }}>{rep.email}</a>
-          </div>
-        )}
-        {rep.contact && (
-          <div style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
-            <span style={{ flexShrink: 0 }}>📞</span>
-            <a href={`tel:${rep.contact.replace(/\s|-/g,"")}`} style={{ color: "#475569", textDecoration: "none" }}>{rep.contact}</a>
-          </div>
-        )}
-        {waHref && (
-          <a href={waHref} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "6px 10px", background: "#DCFCE7", color: "#166534", fontSize: 12, fontWeight: 600, borderRadius: 8, textDecoration: "none", border: "1px solid #86EFAC", alignSelf: "flex-start" }}>
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L.057 23.716a.5.5 0 0 0 .609.61l5.975-1.516A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.886 0-3.65-.523-5.157-1.432l-.36-.214-3.737.949.988-3.648-.235-.375A9.953 9.953 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
-            WhatsApp
-          </a>
-        )}
-      </div>
     </div>
   );
 }
@@ -1770,18 +1704,7 @@ export default function ClientPortal() {
 
               <div style={{ display: "grid", gridTemplateColumns: "2fr 1fr", gap: 18, alignItems: "stretch", marginBottom: 18 }} className="team-meeting-row">
                 <SectionCard title="Your PFAS Advisory Team" style={{ marginBottom: 0 }}>
-                  <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                    <TeamGrid team={filterTeamForProject(project.team, projectSlug)} />
-                    {CLIENT_REPS[projectSlug] && (
-                      <div>
-                        <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: 0.6, textTransform: "uppercase", color: "#0E7C66", marginBottom: 10, display: "flex", alignItems: "center", gap: 8 }}>
-                          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#0E7C66" }} />
-                          Client Representative
-                        </div>
-                        <ClientRepCard rep={CLIENT_REPS[projectSlug]} />
-                      </div>
-                    )}
-                  </div>
+                  <TeamGrid team={filterTeamForProject(project.team, projectSlug)} />
                 </SectionCard>
 
                 <BookMeetingPanel project={project} />
