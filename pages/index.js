@@ -876,8 +876,8 @@ function TeamGrid({ team }) {
         return (
           <div className="member-card" key={i} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-              <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
-                {initials}
+              <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 11, letterSpacing: 0.5 }}>
+                PFAS
               </div>
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div className="member-name" style={{ fontWeight: 700, fontSize: 15, color: "#1E293B", lineHeight: 1.25 }}>{m.name}</div>
@@ -940,13 +940,9 @@ function ClientRepCard({ rep }) {
 
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "linear-gradient(180deg, #F0FDF9 0%, #FFFFFF 60%)", border: "1.5px solid #0E7C66", borderRadius: 14, minWidth: 0, boxShadow: "0 2px 8px rgba(14, 124, 102, 0.08)" }}>
-      {/* Department pill — shows client organization short code */}
-      <div style={{ position: "absolute", top: 10, right: 10, background: "linear-gradient(135deg, #0E7C66, #0A5F4E)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 1, padding: "3px 8px", borderRadius: 10, textTransform: "uppercase", boxShadow: "0 1px 3px rgba(0,0,0,0.15)", maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-        {rep.orgShort || "CLIENT"}
-      </div>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, paddingRight: 60 }}>
-        <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
-          {initials}
+      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+        <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: (rep.orgShort && rep.orgShort.length <= 4) ? 11 : 9.5, letterSpacing: 0.4, textAlign: "center", lineHeight: 1, padding: 2 }}>
+          {rep.orgShort || "CLIENT"}
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           <div style={{ fontWeight: 700, fontSize: 15, color: "#1E293B", lineHeight: 1.25 }}>{rep.name}</div>
@@ -1949,13 +1945,9 @@ export default function ClientPortal() {
                     const waHref       = waNumber ? `https://wa.me/${waNumber}` : null;
                     return (
                       <div className="member-card" key={`pfas-${i}`} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
-                        {/* PFAS pill */}
-                        <div style={{ position: "absolute", top: 10, right: 10, background: "linear-gradient(135deg, #1C2D56, #0F1A34)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 1, padding: "3px 8px", borderRadius: 10, textTransform: "uppercase", boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }}>
-                          PFAS
-                        </div>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, paddingRight: 55 }}>
-                          <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
-                            {initials}
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                          <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 11, letterSpacing: 0.5 }}>
+                            PFAS
                           </div>
                           <div style={{ minWidth: 0, flex: 1 }}>
                             <div className="member-name" style={{ fontWeight: 700, fontSize: 15, color: "#1E293B", lineHeight: 1.25 }}>{m.name}</div>
