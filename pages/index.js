@@ -876,8 +876,8 @@ function TeamGrid({ team }) {
         return (
           <div className="member-card" key={i} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-              <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 11, letterSpacing: 0.5 }}>
-                PFAS
+              <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "#fff", border: "2px solid #1C2D56", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 1px 3px rgba(28, 45, 86, 0.15)" }}>
+                <img src="/logo-dark.png" alt="PFAS" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
               </div>
               <div style={{ minWidth: 0, flex: 1 }}>
                 <div className="member-name" style={{ fontWeight: 700, fontSize: 15, color: "#1E293B", lineHeight: 1.25 }}>{m.name}</div>
@@ -1946,8 +1946,8 @@ export default function ClientPortal() {
                     return (
                       <div className="member-card" key={`pfas-${i}`} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                          <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: 11, letterSpacing: 0.5 }}>
-                            PFAS
+                          <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "#fff", border: "2px solid #1C2D56", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 1px 3px rgba(28, 45, 86, 0.15)" }}>
+                            <img src="/logo-dark.png" alt="PFAS" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
                           </div>
                           <div style={{ minWidth: 0, flex: 1 }}>
                             <div className="member-name" style={{ fontWeight: 700, fontSize: 15, color: "#1E293B", lineHeight: 1.25 }}>{m.name}</div>
