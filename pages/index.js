@@ -791,63 +791,93 @@ function filterTeamForProject(team, slug) {
 // ── Client Representatives (per-project) ────────────────────────────────────
 // One primary client-side contact per project. Only projects listed here get
 // a "Client Representative" card. Add more entries later as needed.
+// ── Client Representatives (per-project, supports multiple per project) ────
+// Each project slug maps to an ARRAY of client representatives. Multiple
+// clients (e.g. C&W has both a C&W dept rep and a P4A/PPP node liaison)
+// are shown as separate cards side-by-side.
+const CW_CLIENTS = [
+  {
+    name:         "Muhammad Ammar",
+    designation:  "Deputy Secretary",
+    organization: "C&W Punjab",
+    orgShort:     "C&W",
+    email:        "dspccwd@gmail.com",
+    contact:      "+92-343-4870657",
+  },
+  {
+    name:         "Khalid Javaid",
+    designation:  "Infrastructure Specialist",
+    organization: "P4A / PPP node C&W Punjab",
+    orgShort:     "P4A",
+    email:        "infrastrc.spec@p4a.punjab.gov.pk",
+    contact:      "+92-333-4124688",
+  },
+];
+
 const CLIENT_REPS = {
-  "pcmmdc": {
+  "pcmmdc": [{
     name:         "Jazib Saeed Khan",
     designation:  "GM HR & Admin",
     organization: "PCMMDC",
     orgShort:     "PCMMDC",
     email:        "gm.hr@pcmmdc.punjab.gov.pk",
     contact:      "+92-321-8400252",
-  },
-  "tam": {
+  }],
+  "tam": [{
     name:         "Syed Waqas Javed",
     designation:  "Secretary",
     organization: "Tourism, Archaeology & Museums Department, Government of the Punjab",
     orgShort:     "TAM",
     email:        "syed.waqasjaved@gmail.com",
     contact:      "+92-300-4009309",
-  },
-  "wildlife-bansra": {
+  }],
+  "wildlife-bansra": [{
     name:         "Zauraiz Haider",
     designation:  "Project Manager",
     organization: "Project Management Unit, Punjab Wildlife and Parks Department",
     orgShort:     "WILDLIFE",
     email:        null,
     contact:      "+92-321-4730431",
-  },
-  "wildlife-changa": {
+  }],
+  "wildlife-changa": [{
     name:         "Zauraiz Haider",
     designation:  "Project Manager",
     organization: "Project Management Unit, Punjab Wildlife and Parks Department",
     orgShort:     "WILDLIFE",
     email:        null,
     contact:      "+92-321-4730431",
-  },
-  "pbf": {
+  }],
+  "pbf": [{
     name:         "Ashfaq Ahmed",
     designation:  "Administrative Officer",
     organization: "Punjab Government Employees Welfare Fund",
     orgShort:     "PBF",
     email:        "faranian@gmail.com",
     contact:      "+92-322-4225969",
-  },
-  "pha": {
+  }],
+  "pha": [{
     name:         "Bilal Basra",
     designation:  "Deputy Director Finance",
     organization: "PHA",
     orgShort:     "PHA",
     email:        null,
     contact:      "+92-345-4477554",
-  },
-  "punjab-onebill": {
+  }],
+  "punjab-onebill": [{
     name:         "Capt. (R) Abdul Wahab Khan",
     designation:  "Deputy Secretary - Resources & Admin",
     organization: "Finance Department",
     orgShort:     "FINANCE",
     email:        null,
     contact:      "+92-332-3102103",
-  },
+  }],
+  // All 6 C&W projects share the same 2 client reps
+  "bot1":     CW_CLIENTS,
+  "bot2":     CW_CLIENTS,
+  "bot3":     CW_CLIENTS,
+  "bot4":     CW_CLIENTS,
+  "bot5":     CW_CLIENTS,
+  "om-roads": CW_CLIENTS,
 };
 
 // ── Team grid ─────────────────────────────────────────────────────────────────
@@ -876,7 +906,7 @@ function TeamGrid({ team }) {
         return (
           <div className="member-card" key={i} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-              <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "#fff", border: "2px solid #1C2D56", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 1px 3px rgba(28, 45, 86, 0.15)" }}>
+              <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg, #1C2D56 0%, #0F1A34 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 2px 6px rgba(28, 45, 86, 0.25)" }}>
                 <img src="/logo-dark.png" alt="PFAS" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
               </div>
               <div style={{ minWidth: 0, flex: 1 }}>
@@ -1946,7 +1976,7 @@ export default function ClientPortal() {
                     return (
                       <div className="member-card" key={`pfas-${i}`} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                          <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "#fff", border: "2px solid #1C2D56", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 1px 3px rgba(28, 45, 86, 0.15)" }}>
+                          <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg, #1C2D56 0%, #0F1A34 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 2px 6px rgba(28, 45, 86, 0.25)" }}>
                             <img src="/logo-dark.png" alt="PFAS" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
                           </div>
                           <div style={{ minWidth: 0, flex: 1 }}>
@@ -1983,10 +2013,10 @@ export default function ClientPortal() {
                     );
                   })}
 
-                  {/* Client Rep — same row, teal-tinted with CLIENT pill */}
-                  {CLIENT_REPS[projectSlug] && (
-                    <ClientRepCard rep={CLIENT_REPS[projectSlug]} />
-                  )}
+                  {/* Client Reps — one card per rep (supports multiple per project) */}
+                  {CLIENT_REPS[projectSlug]?.map((rep, idx) => (
+                    <ClientRepCard key={`client-${idx}`} rep={rep} />
+                  ))}
                 </div>
               </div>
 
