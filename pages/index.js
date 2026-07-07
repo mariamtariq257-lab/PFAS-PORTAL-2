@@ -796,6 +796,7 @@ const CLIENT_REPS = {
     name:         "Jazib Saeed Khan",
     designation:  "GM HR & Admin",
     organization: "PCMMDC",
+    orgShort:     "PCMMDC",
     email:        "gm.hr@pcmmdc.punjab.gov.pk",
     contact:      "+92-321-8400252",
   },
@@ -803,6 +804,7 @@ const CLIENT_REPS = {
     name:         "Syed Waqas Javed",
     designation:  "Secretary",
     organization: "Tourism, Archaeology & Museums Department, Government of the Punjab",
+    orgShort:     "TAM",
     email:        "syed.waqasjaved@gmail.com",
     contact:      "+92-300-4009309",
   },
@@ -810,6 +812,7 @@ const CLIENT_REPS = {
     name:         "Zauraiz Haider",
     designation:  "Project Manager",
     organization: "Project Management Unit, Punjab Wildlife and Parks Department",
+    orgShort:     "WILDLIFE",
     email:        null,
     contact:      "+92-321-4730431",
   },
@@ -817,6 +820,7 @@ const CLIENT_REPS = {
     name:         "Zauraiz Haider",
     designation:  "Project Manager",
     organization: "Project Management Unit, Punjab Wildlife and Parks Department",
+    orgShort:     "WILDLIFE",
     email:        null,
     contact:      "+92-321-4730431",
   },
@@ -824,6 +828,7 @@ const CLIENT_REPS = {
     name:         "Ashfaq Ahmed",
     designation:  "Administrative Officer",
     organization: "Punjab Government Employees Welfare Fund",
+    orgShort:     "PBF",
     email:        "faranian@gmail.com",
     contact:      "+92-322-4225969",
   },
@@ -831,6 +836,7 @@ const CLIENT_REPS = {
     name:         "Bilal Basra",
     designation:  "Deputy Director Finance",
     organization: "PHA",
+    orgShort:     "PHA",
     email:        null,
     contact:      "+92-345-4477554",
   },
@@ -925,9 +931,9 @@ function ClientRepCard({ rep }) {
 
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "linear-gradient(180deg, #F0FDF9 0%, #FFFFFF 60%)", border: "1.5px solid #0E7C66", borderRadius: 14, minWidth: 0, boxShadow: "0 2px 8px rgba(14, 124, 102, 0.08)" }}>
-      {/* CLIENT tag pill */}
-      <div style={{ position: "absolute", top: 10, right: 10, background: "linear-gradient(135deg, #0E7C66, #0A5F4E)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 1, padding: "3px 8px", borderRadius: 10, textTransform: "uppercase", boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }}>
-        CLIENT
+      {/* Department pill — shows client organization short code */}
+      <div style={{ position: "absolute", top: 10, right: 10, background: "linear-gradient(135deg, #0E7C66, #0A5F4E)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 1, padding: "3px 8px", borderRadius: 10, textTransform: "uppercase", boxShadow: "0 1px 3px rgba(0,0,0,0.15)", maxWidth: 110, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+        {rep.orgShort || "CLIENT"}
       </div>
       <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, paddingRight: 60 }}>
         <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
@@ -1663,6 +1669,17 @@ export default function ClientPortal() {
             gap: 12px !important;
           }
 
+          /* Project Team inline header: stack title + book meeting button on mobile */
+          .project-team-header {
+            gap: 10px !important;
+          }
+          .teams-meeting-inline-btn {
+            width: 100% !important;
+            justify-content: center !important;
+            font-size: 12.5px !important;
+            padding: 9px 12px !important;
+          }
+
           /* Admin picker */
           .admin-picker-header {
             flex-direction: column !important;
@@ -1818,8 +1835,49 @@ export default function ClientPortal() {
             <div>
               <KpiRow project={project} />
 
-              {/* Advisory Team + Client Representative — single horizontal card */}
-              <SectionCard title="Your Advisory Team" style={{ marginBottom: 18 }}>
+              {/* Project Team + Book a Meeting inline in header */}
+              <div className="section-card" style={{ ...CARD, marginBottom: 18 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16, flexWrap: "wrap" }} className="project-team-header">
+                  <div style={SECTION_TITLE}>
+                    <span style={TITLE_BAR} />Project Team
+                  </div>
+                  <a
+                    href={project.teamsBookingUrl || project.teamsMeeting || "#"}
+                    target="_blank" rel="noreferrer"
+                    className="teams-meeting-inline-btn"
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      padding: "8px 14px",
+                      background: "linear-gradient(135deg, #EEF1FF 0%, #E0E7FF 100%)",
+                      color: "#4338CA",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      borderRadius: 10,
+                      textDecoration: "none",
+                      border: "1px solid #C7D2FE",
+                      boxShadow: "0 1px 3px rgba(67, 56, 202, 0.08)",
+                      cursor: "pointer",
+                      transition: "transform 0.15s ease, box-shadow 0.15s ease",
+                      whiteSpace: "nowrap",
+                    }}
+                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(67, 56, 202, 0.18)"; }}
+                    onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 3px rgba(67, 56, 202, 0.08)"; }}
+                  >
+                    <span className="teams-icon-pop" style={{ width: 18, height: 18, display: "inline-flex" }}>
+                      <svg width="18" height="18" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
+                        <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v0c0,159.084-118.929,294.296-277.083,310.6-39.083-13.667-81.166-21.083-125-21.083-83.333,0-160.583,27.083-223,72.917v-377.417C1603.75,824.792,1554.637,777.5,1554.637,777.5Z" transform="translate(-128.317 -350.083)"/>
+                        <circle fill="#5059C9" cx="1746.583" cy="240.75" r="240.75"/>
+                        <path fill="#7B83EB" opacity="1" d="M1183.083,777.5H707.37c-54.391,0-98.483,44.092-98.483,98.483v500.953c0,278.604,225.871,504.475,504.475,504.475h0c278.604,0,504.475-225.871,504.475-504.475V875.983C1617.837,821.592,1573.745,777.5,1519.354,777.5Z" transform="translate(-128.317 -350.083)"/>
+                        <circle fill="#7B83EB" cx="945.417" cy="240.75" r="240.75"/>
+                      </svg>
+                    </span>
+                    <span>Book a Meeting</span>
+                    <span style={{ fontSize: 15, marginLeft: 2 }}>↗</span>
+                  </a>
+                </div>
+
                 <div
                   style={{
                     display: "grid",
@@ -1838,8 +1896,12 @@ export default function ClientPortal() {
                     const waNumber     = toWhatsAppNumber(contact);
                     const waHref       = waNumber ? `https://wa.me/${waNumber}` : null;
                     return (
-                      <div className="member-card" key={`pfas-${i}`} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                      <div className="member-card" key={`pfas-${i}`} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
+                        {/* PFAS pill */}
+                        <div style={{ position: "absolute", top: 10, right: 10, background: "linear-gradient(135deg, #1C2D56, #0F1A34)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 1, padding: "3px 8px", borderRadius: 10, textTransform: "uppercase", boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }}>
+                          PFAS
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, paddingRight: 55 }}>
                           <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
                             {initials}
                           </div>
@@ -1882,7 +1944,7 @@ export default function ClientPortal() {
                     <ClientRepCard rep={CLIENT_REPS[projectSlug]} />
                   )}
                 </div>
-              </SectionCard>
+              </div>
 
               {/* Quick Actions — now ABOVE Project Documents */}
               <SectionCard title="Quick Actions">
@@ -1901,11 +1963,6 @@ export default function ClientPortal() {
                 </div>
                 <PhaseList phases={project.phases} />
               </SectionCard>
-
-              {/* Book a Meeting — moved to sidebar below Phase Progress */}
-              <div style={{ marginTop: 16 }}>
-                <BookMeetingPanel project={project} />
-              </div>
             </div>
           </div>
         )}
