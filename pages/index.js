@@ -906,6 +906,7 @@ function TeamGrid({ team }) {
               )}
               {waHref && (
                 <a href={waHref} target="_blank" rel="noreferrer"
+                  className="wa-btn"
                   style={{ flex: 1, display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 6, padding: "8px 10px", background: "#fff", color: "#166534", fontSize: 12.5, fontWeight: 700, borderRadius: 9, textDecoration: "none", border: "1px solid #BBF7D0" }}>
                   <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L.057 23.716a.5.5 0 0 0 .609.61l5.975-1.516A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.886 0-3.65-.523-5.157-1.432l-.36-.214-3.737.949.988-3.648-.235-.375A9.953 9.953 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
                   WhatsApp
@@ -966,7 +967,7 @@ function ClientRepCard({ rep }) {
           </div>
         )}
         {waHref && (
-          <a href={waHref} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "6px 10px", background: "#DCFCE7", color: "#166534", fontSize: 12, fontWeight: 600, borderRadius: 8, textDecoration: "none", border: "1px solid #86EFAC", alignSelf: "flex-start" }}>
+          <a href={waHref} target="_blank" rel="noreferrer" className="wa-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "6px 10px", background: "#DCFCE7", color: "#166534", fontSize: 12, fontWeight: 600, borderRadius: 8, textDecoration: "none", border: "1px solid #86EFAC", alignSelf: "flex-start" }}>
             <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L.057 23.716a.5.5 0 0 0 .609.61l5.975-1.516A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.886 0-3.65-.523-5.157-1.432l-.36-.214-3.737.949.988-3.648-.235-.375A9.953 9.953 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
             WhatsApp
           </a>
@@ -1419,10 +1420,59 @@ export default function ClientPortal() {
           animation: pfas-call-blink 1.4s ease-in-out infinite, pfas-call-glow 1.4s ease-in-out infinite;
         }
         .call-blink:hover { animation-play-state: paused; background: #BBF7D0; }
+
+        /* WhatsApp button — subtle glow pulse to highlight without shouting */
+        @keyframes wa-glow {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); border-color: #86EFAC; }
+          50%      { box-shadow: 0 0 0 5px rgba(37, 211, 102, 0); border-color: #22C55E; }
+        }
+        @keyframes wa-icon-wiggle {
+          0%, 88%, 100% { transform: rotate(0deg) scale(1); }
+          92%           { transform: rotate(-8deg) scale(1.08); }
+          96%           { transform: rotate(6deg) scale(1.08); }
+        }
+        .wa-btn {
+          animation: wa-glow 2.2s ease-in-out infinite;
+          transition: transform 0.15s ease;
+        }
+        .wa-btn:hover {
+          animation-play-state: paused;
+          background: #BBF7D0 !important;
+          transform: translateY(-1px);
+        }
+        .wa-btn svg { animation: wa-icon-wiggle 3.4s ease-in-out infinite; transform-origin: center; }
+
+        /* Book a Meeting — continuous pop pulse to draw attention */
+        @keyframes book-meeting-pop {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 2px 8px rgba(67, 56, 202, 0.15);
+          }
+          50% {
+            transform: scale(1.035);
+            box-shadow: 0 8px 22px rgba(67, 56, 202, 0.32);
+          }
+        }
+        @keyframes book-meeting-shine {
+          0%   { background-position: -200% center; }
+          100% { background-position: 200% center; }
+        }
+        .teams-meeting-inline-btn {
+          animation: book-meeting-pop 2.6s ease-in-out infinite;
+          background: linear-gradient(135deg, #EEF1FF 0%, #E0E7FF 50%, #EEF1FF 100%) !important;
+          background-size: 200% auto !important;
+        }
+        .teams-meeting-inline-btn:hover {
+          animation-play-state: paused;
+        }
+
         @media (prefers-reduced-motion: reduce) {
           .call-blink { animation: none; }
           .pfas-action-card { animation: none; opacity: 1; }
           .teams-icon-pop { animation: none; }
+          .wa-btn { animation: none; }
+          .wa-btn svg { animation: none; }
+          .teams-meeting-inline-btn { animation: none; }
         }
         .pfas-action-card {
           transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
@@ -1848,25 +1898,21 @@ export default function ClientPortal() {
                     style={{
                       display: "inline-flex",
                       alignItems: "center",
-                      gap: 8,
-                      padding: "8px 14px",
-                      background: "linear-gradient(135deg, #EEF1FF 0%, #E0E7FF 100%)",
+                      gap: 10,
+                      padding: "11px 20px",
                       color: "#4338CA",
-                      fontSize: 13,
-                      fontWeight: 700,
-                      borderRadius: 10,
+                      fontSize: 14.5,
+                      fontWeight: 800,
+                      borderRadius: 12,
                       textDecoration: "none",
-                      border: "1px solid #C7D2FE",
-                      boxShadow: "0 1px 3px rgba(67, 56, 202, 0.08)",
+                      border: "1.5px solid #C7D2FE",
                       cursor: "pointer",
-                      transition: "transform 0.15s ease, box-shadow 0.15s ease",
                       whiteSpace: "nowrap",
+                      letterSpacing: 0.2,
                     }}
-                    onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-1px)"; e.currentTarget.style.boxShadow = "0 4px 12px rgba(67, 56, 202, 0.18)"; }}
-                    onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; e.currentTarget.style.boxShadow = "0 1px 3px rgba(67, 56, 202, 0.08)"; }}
                   >
-                    <span className="teams-icon-pop" style={{ width: 18, height: 18, display: "inline-flex" }}>
-                      <svg width="18" height="18" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
+                    <span className="teams-icon-pop" style={{ width: 22, height: 22, display: "inline-flex" }}>
+                      <svg width="22" height="22" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
                         <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v0c0,159.084-118.929,294.296-277.083,310.6-39.083-13.667-81.166-21.083-125-21.083-83.333,0-160.583,27.083-223,72.917v-377.417C1603.75,824.792,1554.637,777.5,1554.637,777.5Z" transform="translate(-128.317 -350.083)"/>
                         <circle fill="#5059C9" cx="1746.583" cy="240.75" r="240.75"/>
                         <path fill="#7B83EB" opacity="1" d="M1183.083,777.5H707.37c-54.391,0-98.483,44.092-98.483,98.483v500.953c0,278.604,225.871,504.475,504.475,504.475h0c278.604,0,504.475-225.871,504.475-504.475V875.983C1617.837,821.592,1573.745,777.5,1519.354,777.5Z" transform="translate(-128.317 -350.083)"/>
@@ -1874,7 +1920,7 @@ export default function ClientPortal() {
                       </svg>
                     </span>
                     <span>Book a Meeting</span>
-                    <span style={{ fontSize: 15, marginLeft: 2 }}>↗</span>
+                    <span style={{ fontSize: 16, marginLeft: 2 }}>↗</span>
                   </a>
                 </div>
 
@@ -1929,7 +1975,7 @@ export default function ClientPortal() {
                             </div>
                           )}
                           {waHref && (
-                            <a href={waHref} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "6px 10px", background: "#DCFCE7", color: "#166534", fontSize: 12, fontWeight: 600, borderRadius: 8, textDecoration: "none", border: "1px solid #86EFAC", alignSelf: "flex-start" }}>
+                            <a href={waHref} target="_blank" rel="noreferrer" className="wa-btn" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "6px 10px", background: "#DCFCE7", color: "#166534", fontSize: 12, fontWeight: 600, borderRadius: 8, textDecoration: "none", border: "1px solid #86EFAC", alignSelf: "flex-start" }}>
                               <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L.057 23.716a.5.5 0 0 0 .609.61l5.975-1.516A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.886 0-3.65-.523-5.157-1.432l-.36-.214-3.737.949.988-3.648-.235-.375A9.953 9.953 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
                               WhatsApp
                             </a>
