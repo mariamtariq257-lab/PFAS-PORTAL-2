@@ -656,26 +656,13 @@ function KpiRow({ project }) {
   };
   const receivedDisplay = formatReceivedPayments(project.receivedPayments);
 
-  // ClickUp phase names often come back in ALL CAPS (e.g. "PHASE 2 –
-  // INSTITUTIONAL & LEGAL FRAMEWORK (D-II)"). Convert to sentence case
-  // (capitalize only the first letter) so it reads naturally instead of
-  // shouting.
-  const toSentenceCase = (str) => {
-    if (!str) return str;
-    const lower = str.toLowerCase();
-    return lower.charAt(0).toUpperCase() + lower.slice(1);
-  };
-  const phaseDisplay = toSentenceCase(project.currentPhase);
-
   const kpis = [
     { label: "Project Progress",   value: `${project.overallPercent}%`,         sub: "Overall completion",        accent: "#1C2D56", bg: "linear-gradient(135deg,#F0F4FA,#FFFFFF)" },
-    { label: "Active Tasks",       value: project.activeTasks,                  sub: "Ongoing tasks",              accent: "#B45309", bg: "linear-gradient(135deg,#FFF7ED,#FFFFFF)" },
-    { label: "Current Phase",      value: phaseDisplay,                          sub: "In progress",               accent: "#166534", bg: "linear-gradient(135deg,#F0FDF4,#FFFFFF)", small: true },
     { label: "Engagement Value",   value: project.pfasFee || "PKR TBD",         sub: "Total advisory fee",        accent: "#6B21A8", bg: "linear-gradient(135deg,#FAF5FF,#FFFFFF)" },
     { label: "Received Payments",  value: receivedDisplay,                      sub: "Of total fee",              accent: "#0369A1", bg: "linear-gradient(135deg,#EFF6FF,#FFFFFF)" },
   ];
   return (
-    <div className="kpi-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginBottom: 18 }}>
+    <div className="kpi-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 18 }}>
       {kpis.map((k, i) => (
         <div className="kpi" key={i} style={{ ...CARD, marginBottom: 0, padding: 18, background: k.bg, borderLeft: `3px solid ${k.accent}` }}>
           <div className="kpi-label" style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#64748B" }}>{k.label}</div>
@@ -962,24 +949,52 @@ function TeamGrid({ team }) {
 // Renders a single client-side contact for a project. Only renders if the
 // project's slug has an entry in CLIENT_REPS. Same visual language as the
 // PFAS team members but tinted teal to distinguish "client side" from "PFAS side".
+// Fit the org short-code inside the round avatar regardless of length.
+function orgBadgeFontSize(text) {
+  const len = (text || "CLIENT").length;
+  if (len <= 3) return 15;
+  if (len <= 4) return 13.5;
+  if (len <= 5) return 12.5;
+  if (len <= 6) return 11.5;
+  if (len <= 7) return 10.5;
+  return 10;
+}
+
 function ClientRepCard({ rep }) {
   if (!rep) return null;
-  const initials = rep.name.split(" ").map(n => n[0]).join("").substring(0, 2);
   const waNumber = toWhatsAppNumber(rep.contact);
   const waHref   = waNumber ? `https://wa.me/${waNumber}` : null;
 
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "linear-gradient(180deg, #F0FDF9 0%, #FFFFFF 60%)", border: "1.5px solid #0E7C66", borderRadius: 14, minWidth: 0, boxShadow: "0 2px 8px rgba(14, 124, 102, 0.08)" }}>
+      <div className="client-tag" aria-hidden="true">Client</div>
+      <style jsx global>{`
+        .client-tag {
+          position: absolute;
+          top: 10px;
+          right: 10px;
+          padding: 3px 11px;
+          border-radius: 999px;
+          background: linear-gradient(135deg, #0E7C66, #0A5F4E);
+          color: #E6FFF7;
+          font-size: 9.5px;
+          font-weight: 800;
+          letter-spacing: 1.4px;
+          text-transform: uppercase;
+          pointer-events: none;
+          box-shadow: 0 0 0 0 rgba(14, 124, 102, 0.45);
+        }
+        @media (prefers-reduced-motion: no-preference) {
+          .client-tag { animation: clientTagBeam 2.6s ease-out infinite; }
+        }
+        @keyframes clientTagBeam {
+          0%   { box-shadow: 0 0 0 0 rgba(14, 124, 102, 0.45); }
+          70%  { box-shadow: 0 0 0 9px rgba(14, 124, 102, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(14, 124, 102, 0); }
+        }
+      `}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-        <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: (() => {
-          const len = (rep.orgShort || "CLIENT").length;
-          if (len <= 3) return 15;
-          if (len <= 4) return 13.5;
-          if (len <= 5) return 12.5;
-          if (len <= 6) return 11.5;
-          if (len <= 7) return 10.5;
-          return 10;
-        })(), letterSpacing: 0.3, textAlign: "center", lineHeight: 1, padding: 3, boxShadow: "0 2px 6px rgba(14, 124, 102, 0.25)" }}>
+        <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: orgBadgeFontSize(rep.orgShort), letterSpacing: 0.3, textAlign: "center", lineHeight: 1, padding: 3, boxShadow: "0 2px 6px rgba(14, 124, 102, 0.25)" }}>
           {rep.orgShort || "CLIENT"}
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
