@@ -675,23 +675,35 @@ function KpiRow({ project }) {
         href={bookingUrl}
         target="_blank" rel="noreferrer"
         className="kpi kpi-action"
-        style={{ ...CARD, marginBottom: 0, padding: 18, background: "linear-gradient(135deg,#EEF2FF,#FFFFFF)", borderLeft: "3px solid #4338CA", textDecoration: "none", display: "block", cursor: "pointer" }}
+        style={{ ...CARD, marginBottom: 0, padding: 18, background: "linear-gradient(135deg,#4F46E5,#3B34B8)", border: "none", textDecoration: "none", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}
       >
-        <div className="kpi-label" style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#64748B", display: "flex", alignItems: "center", gap: 6 }}>
-          <svg width="14" height="14" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+        <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: "50%", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.18)" }}>
+          <svg width="27" height="27" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
             <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v0c0,159.084-118.929,294.296-277.083,310.6-39.083-13.667-81.166-21.083-125-21.083-83.333,0-160.583,27.083-223,72.917v-377.417C1603.75,824.792,1554.637,777.5,1554.637,777.5Z" transform="translate(-128.317 -350.083)"/>
             <circle fill="#5059C9" cx="1746.583" cy="240.75" r="240.75"/>
             <path fill="#7B83EB" d="M1183.083,777.5H707.37c-54.391,0-98.483,44.092-98.483,98.483v500.953c0,278.604,225.871,504.475,504.475,504.475h0c278.604,0,504.475-225.871,504.475-504.475V875.983C1617.837,821.592,1573.745,777.5,1519.354,777.5Z" transform="translate(-128.317 -350.083)"/>
             <circle fill="#7B83EB" cx="945.417" cy="240.75" r="240.75"/>
           </svg>
-          Schedule
-        </div>
-        <div className="kpi-value" style={{ fontSize: 20, fontWeight: 700, color: "#4338CA", margin: "8px 0 4px", lineHeight: 1.3 }}>Book a Meeting ↗</div>
-        <div className="kpi-sub" style={{ fontSize: 12, color: "#94A3B8" }}>Microsoft Teams · Bookings</div>
+        </span>
+        <span style={{ minWidth: 0 }}>
+          <span style={{ display: "block", fontSize: 10.5, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", color: "rgba(255,255,255,0.75)" }}>Schedule</span>
+          <span className="kpi-action-title" style={{ display: "block", fontSize: 18.5, fontWeight: 800, color: "#FFFFFF", margin: "5px 0 3px", lineHeight: 1.25 }}>Book a Meeting <span className="kpi-action-arrow" style={{ display: "inline-block" }}>↗</span></span>
+          <span style={{ display: "block", fontSize: 11.5, color: "rgba(255,255,255,0.65)" }}>Microsoft Teams · Bookings</span>
+        </span>
       </a>
       <style jsx global>{`
-        .kpi-action { transition: transform 0.16s ease, box-shadow 0.16s ease; }
-        .kpi-action:hover { transform: translateY(-3px); box-shadow: 0 10px 24px -10px rgba(67, 56, 202, 0.35); }
+        .kpi-action { transition: transform 0.16s ease, filter 0.16s ease; }
+        .kpi-action:hover { transform: translateY(-3px); filter: brightness(1.08); }
+        .kpi-action:hover .kpi-action-arrow { transform: translate(2px, -2px); }
+        .kpi-action-arrow { transition: transform 0.16s ease; }
+        @media (prefers-reduced-motion: no-preference) {
+          .kpi-action { animation: bookBeam 3s ease-out infinite; }
+        }
+        @keyframes bookBeam {
+          0%   { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.42); }
+          65%  { box-shadow: 0 0 0 13px rgba(79, 70, 229, 0); }
+          100% { box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        }
       `}</style>
     </div>
   );
@@ -975,12 +987,12 @@ function TeamGrid({ team }) {
 // Fit the org short-code inside the round avatar regardless of length.
 function orgBadgeFontSize(text) {
   const len = (text || "CLIENT").length;
-  if (len <= 3) return 15;
-  if (len <= 4) return 13.5;
-  if (len <= 5) return 12.5;
-  if (len <= 6) return 11.5;
-  if (len <= 7) return 10.5;
-  return 10;
+  if (len <= 3) return 14;
+  if (len <= 4) return 12.5;
+  if (len <= 5) return 11;
+  if (len <= 6) return 9.8;
+  if (len <= 7) return 9;
+  return 8.5;
 }
 
 function ClientRepCard({ rep }) {
@@ -1028,7 +1040,7 @@ function ClientRepCard({ rep }) {
         }
       `}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-        <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: orgBadgeFontSize(rep.orgShort), letterSpacing: 0.3, textAlign: "center", lineHeight: 1, padding: 3, boxShadow: "0 2px 6px rgba(14, 124, 102, 0.25)" }}>
+        <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: orgBadgeFontSize(rep.orgShort), letterSpacing: 0.15, textAlign: "center", lineHeight: 1, padding: 3, boxShadow: "0 2px 6px rgba(14, 124, 102, 0.25)" }}>
           {rep.orgShort || "CLIENT"}
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
