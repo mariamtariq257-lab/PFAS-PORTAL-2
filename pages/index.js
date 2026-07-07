@@ -1429,61 +1429,48 @@ export default function ClientPortal() {
         }
         .call-blink:hover { animation-play-state: paused; background: #BBF7D0; }
 
-        /* WhatsApp button — continuous smooth motion (float + gentle icon swing) */
-        @keyframes wa-float {
-          0%, 100% { transform: translateY(0px); }
-          50%      { transform: translateY(-2.5px); }
-        }
-        @keyframes wa-icon-swing {
-          0%   { transform: rotate(-10deg); }
-          50%  { transform: rotate(10deg); }
-          100% { transform: rotate(-10deg); }
-        }
-        @keyframes wa-border-shift {
-          0%, 100% { border-color: #86EFAC; background: #DCFCE7; }
-          50%      { border-color: #22C55E; background: #BBF7D0; }
+        /* WhatsApp button — elegant slow breath */
+        @keyframes wa-breath {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.35);
+          }
+          50% {
+            transform: scale(1.025);
+            box-shadow: 0 0 0 6px rgba(34, 197, 94, 0);
+          }
         }
         .wa-btn {
-          animation: wa-float 1.8s ease-in-out infinite,
-                     wa-border-shift 2.4s ease-in-out infinite;
-          transition: transform 0.15s ease;
+          animation: wa-breath 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+          transition: transform 0.2s ease, background 0.2s ease;
+          transform-origin: center;
         }
         .wa-btn:hover {
           animation-play-state: paused;
           background: #BBF7D0 !important;
-          transform: translateY(-2px) scale(1.03);
-        }
-        .wa-btn svg {
-          animation: wa-icon-swing 2s ease-in-out infinite;
-          transform-origin: center;
+          transform: scale(1.05);
         }
 
-        /* Book a Meeting — slow continuous vibration */
-        @keyframes book-meeting-vibrate {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          10%      { transform: translate(-0.6px, 0.4px) rotate(-0.25deg); }
-          20%      { transform: translate(0.6px, -0.4px) rotate(0.25deg); }
-          30%      { transform: translate(-0.5px, -0.5px) rotate(-0.2deg); }
-          40%      { transform: translate(0.5px, 0.5px) rotate(0.2deg); }
-          50%      { transform: translate(-0.6px, 0.4px) rotate(-0.25deg); }
-          60%      { transform: translate(0.6px, -0.4px) rotate(0.25deg); }
-          70%      { transform: translate(-0.5px, -0.5px) rotate(-0.2deg); }
-          80%      { transform: translate(0.5px, 0.5px) rotate(0.2deg); }
-          90%      { transform: translate(-0.4px, 0.3px) rotate(-0.15deg); }
-        }
-        @keyframes book-meeting-halo {
-          0%, 100% { box-shadow: 0 2px 8px rgba(67, 56, 202, 0.15); }
-          50%      { box-shadow: 0 4px 14px rgba(67, 56, 202, 0.28); }
+        /* Book a Meeting — elegant slow breath with soft indigo halo */
+        @keyframes book-meeting-breath {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 2px 10px rgba(67, 56, 202, 0.12);
+          }
+          50% {
+            transform: scale(1.02);
+            box-shadow: 0 6px 22px rgba(67, 56, 202, 0.28);
+          }
         }
         .teams-meeting-inline-btn {
-          animation: book-meeting-vibrate 1.2s linear infinite,
-                     book-meeting-halo 2.8s ease-in-out infinite;
+          animation: book-meeting-breath 3.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
           background: linear-gradient(135deg, #EEF1FF 0%, #E0E7FF 100%) !important;
+          transform-origin: center;
         }
         .teams-meeting-inline-btn:hover {
           animation-play-state: paused;
-          transform: scale(1.04);
-          box-shadow: 0 6px 18px rgba(67, 56, 202, 0.32) !important;
+          transform: scale(1.045);
+          box-shadow: 0 8px 24px rgba(67, 56, 202, 0.35) !important;
         }
 
         @media (prefers-reduced-motion: reduce) {
@@ -1491,7 +1478,6 @@ export default function ClientPortal() {
           .pfas-action-card { animation: none; opacity: 1; }
           .teams-icon-pop { animation: none; }
           .wa-btn { animation: none; }
-          .wa-btn svg { animation: none; }
           .teams-meeting-inline-btn { animation: none; }
         }
         .pfas-action-card {
