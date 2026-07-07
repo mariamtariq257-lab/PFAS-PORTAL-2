@@ -840,6 +840,14 @@ const CLIENT_REPS = {
     email:        null,
     contact:      "+92-345-4477554",
   },
+  "punjab-onebill": {
+    name:         "Capt. (R) Abdul Wahab Khan",
+    designation:  "Deputy Secretary - Resources & Admin",
+    organization: "Finance Department",
+    orgShort:     "FINANCE",
+    email:        null,
+    contact:      "+92-332-3102103",
+  },
 };
 
 // ── Team grid ─────────────────────────────────────────────────────────────────
@@ -1421,49 +1429,61 @@ export default function ClientPortal() {
         }
         .call-blink:hover { animation-play-state: paused; background: #BBF7D0; }
 
-        /* WhatsApp button — subtle glow pulse to highlight without shouting */
-        @keyframes wa-glow {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.5); border-color: #86EFAC; }
-          50%      { box-shadow: 0 0 0 5px rgba(37, 211, 102, 0); border-color: #22C55E; }
+        /* WhatsApp button — continuous smooth motion (float + gentle icon swing) */
+        @keyframes wa-float {
+          0%, 100% { transform: translateY(0px); }
+          50%      { transform: translateY(-2.5px); }
         }
-        @keyframes wa-icon-wiggle {
-          0%, 88%, 100% { transform: rotate(0deg) scale(1); }
-          92%           { transform: rotate(-8deg) scale(1.08); }
-          96%           { transform: rotate(6deg) scale(1.08); }
+        @keyframes wa-icon-swing {
+          0%   { transform: rotate(-10deg); }
+          50%  { transform: rotate(10deg); }
+          100% { transform: rotate(-10deg); }
+        }
+        @keyframes wa-border-shift {
+          0%, 100% { border-color: #86EFAC; background: #DCFCE7; }
+          50%      { border-color: #22C55E; background: #BBF7D0; }
         }
         .wa-btn {
-          animation: wa-glow 2.2s ease-in-out infinite;
+          animation: wa-float 1.8s ease-in-out infinite,
+                     wa-border-shift 2.4s ease-in-out infinite;
           transition: transform 0.15s ease;
         }
         .wa-btn:hover {
           animation-play-state: paused;
           background: #BBF7D0 !important;
-          transform: translateY(-1px);
+          transform: translateY(-2px) scale(1.03);
         }
-        .wa-btn svg { animation: wa-icon-wiggle 3.4s ease-in-out infinite; transform-origin: center; }
+        .wa-btn svg {
+          animation: wa-icon-swing 2s ease-in-out infinite;
+          transform-origin: center;
+        }
 
-        /* Book a Meeting — continuous pop pulse to draw attention */
-        @keyframes book-meeting-pop {
-          0%, 100% {
-            transform: scale(1);
-            box-shadow: 0 2px 8px rgba(67, 56, 202, 0.15);
-          }
-          50% {
-            transform: scale(1.035);
-            box-shadow: 0 8px 22px rgba(67, 56, 202, 0.32);
-          }
+        /* Book a Meeting — slow continuous vibration */
+        @keyframes book-meeting-vibrate {
+          0%, 100% { transform: translate(0, 0) rotate(0deg); }
+          10%      { transform: translate(-0.6px, 0.4px) rotate(-0.25deg); }
+          20%      { transform: translate(0.6px, -0.4px) rotate(0.25deg); }
+          30%      { transform: translate(-0.5px, -0.5px) rotate(-0.2deg); }
+          40%      { transform: translate(0.5px, 0.5px) rotate(0.2deg); }
+          50%      { transform: translate(-0.6px, 0.4px) rotate(-0.25deg); }
+          60%      { transform: translate(0.6px, -0.4px) rotate(0.25deg); }
+          70%      { transform: translate(-0.5px, -0.5px) rotate(-0.2deg); }
+          80%      { transform: translate(0.5px, 0.5px) rotate(0.2deg); }
+          90%      { transform: translate(-0.4px, 0.3px) rotate(-0.15deg); }
         }
-        @keyframes book-meeting-shine {
-          0%   { background-position: -200% center; }
-          100% { background-position: 200% center; }
+        @keyframes book-meeting-halo {
+          0%, 100% { box-shadow: 0 2px 8px rgba(67, 56, 202, 0.15); }
+          50%      { box-shadow: 0 4px 14px rgba(67, 56, 202, 0.28); }
         }
         .teams-meeting-inline-btn {
-          animation: book-meeting-pop 2.6s ease-in-out infinite;
-          background: linear-gradient(135deg, #EEF1FF 0%, #E0E7FF 50%, #EEF1FF 100%) !important;
-          background-size: 200% auto !important;
+          animation: book-meeting-vibrate 1.2s linear infinite,
+                     book-meeting-halo 2.8s ease-in-out infinite;
+          background: linear-gradient(135deg, #EEF1FF 0%, #E0E7FF 100%) !important;
         }
         .teams-meeting-inline-btn:hover {
           animation-play-state: paused;
+          transform: scale(1.04);
+          box-shadow: 0 6px 18px rgba(67, 56, 202, 0.32) !important;
         }
 
         @media (prefers-reduced-motion: reduce) {
