@@ -675,10 +675,10 @@ function KpiRow({ project }) {
         href={bookingUrl}
         target="_blank" rel="noreferrer"
         className="kpi kpi-action"
-        style={{ ...CARD, marginBottom: 0, padding: 18, background: "linear-gradient(135deg,#4F46E5,#3B34B8)", border: "none", textDecoration: "none", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}
+        style={{ ...CARD, marginBottom: 0, padding: 18, background: "linear-gradient(135deg,#EEF2FF,#FFFFFF)", border: "1.5px solid #C7D2FE", textDecoration: "none", display: "flex", alignItems: "center", gap: 14, cursor: "pointer" }}
       >
-        <span style={{ flexShrink: 0, width: 46, height: 46, borderRadius: "50%", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.18)" }}>
-          <svg width="27" height="27" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
+        <span style={{ flexShrink: 0, width: 58, height: 58, borderRadius: "50%", background: "#FFFFFF", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 4px 14px rgba(79,70,229,0.22)", border: "1px solid #E0E7FF" }}>
+          <svg width="36" height="36" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
             <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v0c0,159.084-118.929,294.296-277.083,310.6-39.083-13.667-81.166-21.083-125-21.083-83.333,0-160.583,27.083-223,72.917v-377.417C1603.75,824.792,1554.637,777.5,1554.637,777.5Z" transform="translate(-128.317 -350.083)"/>
             <circle fill="#5059C9" cx="1746.583" cy="240.75" r="240.75"/>
             <path fill="#7B83EB" d="M1183.083,777.5H707.37c-54.391,0-98.483,44.092-98.483,98.483v500.953c0,278.604,225.871,504.475,504.475,504.475h0c278.604,0,504.475-225.871,504.475-504.475V875.983C1617.837,821.592,1573.745,777.5,1519.354,777.5Z" transform="translate(-128.317 -350.083)"/>
@@ -686,9 +686,9 @@ function KpiRow({ project }) {
           </svg>
         </span>
         <span style={{ minWidth: 0 }}>
-          <span style={{ display: "block", fontSize: 10.5, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", color: "rgba(255,255,255,0.75)" }}>Schedule</span>
-          <span className="kpi-action-title" style={{ display: "block", fontSize: 18.5, fontWeight: 800, color: "#FFFFFF", margin: "5px 0 3px", lineHeight: 1.25 }}>Book a Meeting <span className="kpi-action-arrow" style={{ display: "inline-block" }}>↗</span></span>
-          <span style={{ display: "block", fontSize: 11.5, color: "rgba(255,255,255,0.65)" }}>Microsoft Teams · Bookings</span>
+          <span style={{ display: "block", fontSize: 10.5, fontWeight: 700, letterSpacing: 1.2, textTransform: "uppercase", color: "#6366F1" }}>Schedule</span>
+          <span className="kpi-action-title" style={{ display: "block", fontSize: 18.5, fontWeight: 800, color: "#3730A3", margin: "5px 0 3px", lineHeight: 1.25 }}>Book a Meeting <span className="kpi-action-arrow" style={{ display: "inline-block" }}>↗</span></span>
+          <span style={{ display: "block", fontSize: 11.5, color: "#818CF8" }}>Microsoft Teams · Bookings</span>
         </span>
       </a>
       <style jsx global>{`
