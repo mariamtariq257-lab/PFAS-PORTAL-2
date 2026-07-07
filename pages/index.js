@@ -906,7 +906,7 @@ function TeamGrid({ team }) {
         return (
           <div className="member-card" key={i} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-              <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg, #1C2D56 0%, #0F1A34 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 2px 6px rgba(28, 45, 86, 0.25)" }}>
+              <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg, #1C2D56 0%, #0F1A34 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 8, boxShadow: "0 2px 6px rgba(28, 45, 86, 0.25)" }}>
                 <img src="/logo-dark.png" alt="PFAS" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
               </div>
               <div style={{ minWidth: 0, flex: 1 }}>
@@ -971,7 +971,15 @@ function ClientRepCard({ rep }) {
   return (
     <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "linear-gradient(180deg, #F0FDF9 0%, #FFFFFF 60%)", border: "1.5px solid #0E7C66", borderRadius: 14, minWidth: 0, boxShadow: "0 2px 8px rgba(14, 124, 102, 0.08)" }}>
       <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-        <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: (rep.orgShort && rep.orgShort.length <= 4) ? 11 : 9.5, letterSpacing: 0.4, textAlign: "center", lineHeight: 1, padding: 2 }}>
+        <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 800, fontSize: (() => {
+          const len = (rep.orgShort || "CLIENT").length;
+          if (len <= 3) return 15;
+          if (len <= 4) return 13.5;
+          if (len <= 5) return 12.5;
+          if (len <= 6) return 11.5;
+          if (len <= 7) return 10.5;
+          return 10;
+        })(), letterSpacing: 0.3, textAlign: "center", lineHeight: 1, padding: 3, boxShadow: "0 2px 6px rgba(14, 124, 102, 0.25)" }}>
           {rep.orgShort || "CLIENT"}
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
@@ -1976,7 +1984,7 @@ export default function ClientPortal() {
                     return (
                       <div className="member-card" key={`pfas-${i}`} style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
                         <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
-                          <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg, #1C2D56 0%, #0F1A34 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 6, boxShadow: "0 2px 6px rgba(28, 45, 86, 0.25)" }}>
+                          <div style={{ flexShrink: 0, width: 56, height: 56, borderRadius: "50%", background: "linear-gradient(135deg, #1C2D56 0%, #0F1A34 100%)", display: "flex", alignItems: "center", justifyContent: "center", padding: 8, boxShadow: "0 2px 6px rgba(28, 45, 86, 0.25)" }}>
                             <img src="/logo-dark.png" alt="PFAS" style={{ maxWidth: "100%", maxHeight: "100%", objectFit: "contain" }} />
                           </div>
                           <div style={{ minWidth: 0, flex: 1 }}>
