@@ -806,6 +806,34 @@ const CLIENT_REPS = {
     email:        "syed.waqasjaved@gmail.com",
     contact:      "+92-300-4009309",
   },
+  "wildlife-bansra": {
+    name:         "Zauraiz Haider",
+    designation:  "Project Manager",
+    organization: "Project Management Unit, Punjab Wildlife and Parks Department",
+    email:        null,
+    contact:      "+92-321-4730431",
+  },
+  "wildlife-changa": {
+    name:         "Zauraiz Haider",
+    designation:  "Project Manager",
+    organization: "Project Management Unit, Punjab Wildlife and Parks Department",
+    email:        null,
+    contact:      "+92-321-4730431",
+  },
+  "pbf": {
+    name:         "Ashfaq Ahmed",
+    designation:  "Administrative Officer",
+    organization: "Punjab Government Employees Welfare Fund",
+    email:        "faranian@gmail.com",
+    contact:      "+92-322-4225969",
+  },
+  "pha": {
+    name:         "Bilal Basra",
+    designation:  "Deputy Director Finance",
+    organization: "PHA",
+    email:        null,
+    contact:      "+92-345-4477554",
+  },
 };
 
 // ── Team grid ─────────────────────────────────────────────────────────────────
@@ -896,8 +924,12 @@ function ClientRepCard({ rep }) {
   const waHref   = waNumber ? `https://wa.me/${waNumber}` : null;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+    <div style={{ position: "relative", display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "linear-gradient(180deg, #F0FDF9 0%, #FFFFFF 60%)", border: "1.5px solid #0E7C66", borderRadius: 14, minWidth: 0, boxShadow: "0 2px 8px rgba(14, 124, 102, 0.08)" }}>
+      {/* CLIENT tag pill */}
+      <div style={{ position: "absolute", top: 10, right: 10, background: "linear-gradient(135deg, #0E7C66, #0A5F4E)", color: "#fff", fontSize: 9.5, fontWeight: 800, letterSpacing: 1, padding: "3px 8px", borderRadius: 10, textTransform: "uppercase", boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }}>
+        CLIENT
+      </div>
+      <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0, paddingRight: 60 }}>
         <div style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", background: "linear-gradient(135deg,#0E7C66,#0A5F4E)", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
           {initials}
         </div>
@@ -1786,41 +1818,71 @@ export default function ClientPortal() {
             <div>
               <KpiRow project={project} />
 
-              {/* Row: PFAS Team | Client Representative | Book a Meeting */}
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: CLIENT_REPS[projectSlug]
-                    ? "1.6fr 1.2fr 0.9fr"
-                    : "2fr 1fr",
-                  gap: 16,
-                  alignItems: "stretch",
-                  marginBottom: 18,
-                }}
-                className="team-meeting-row"
-              >
-                {/* PFAS Advisory Team */}
-                <SectionCard title="Your PFAS Advisory Team" style={{ marginBottom: 0 }}>
-                  <TeamGrid team={filterTeamForProject(project.team, projectSlug)} />
-                </SectionCard>
+              {/* Advisory Team + Client Representative — single horizontal card */}
+              <SectionCard title="Your Advisory Team" style={{ marginBottom: 18 }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+                    gap: 14,
+                  }}
+                >
+                  {/* PFAS team members */}
+                  {filterTeamForProject(project.team, projectSlug)?.map((m, i) => {
+                    const initials = m.name.split(" ").map(n => n[0]).join("").substring(0, 2);
+                    const staffKey = (m.email || "").toLowerCase().trim();
+                    const staff    = STAFF_DIRECTORY[staffKey] || {};
+                    const designation  = staff.designation || m.role || "—";
+                    const contact      = staff.contact     || null;
+                    const emailDisplay = m.email && m.email !== "—" ? m.email : null;
+                    const waNumber     = toWhatsAppNumber(contact);
+                    const waHref       = waNumber ? `https://wa.me/${waNumber}` : null;
+                    return (
+                      <div className="member-card" key={`pfas-${i}`} style={{ display: "flex", flexDirection: "column", gap: 10, padding: 16, background: "#fff", border: "1px solid #C9D2DE", borderRadius: 14, minWidth: 0 }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
+                          <div className={`avatar av-${m.color}`} style={{ flexShrink: 0, width: 44, height: 44, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "#fff", fontWeight: 700, fontSize: 15 }}>
+                            {initials}
+                          </div>
+                          <div style={{ minWidth: 0, flex: 1 }}>
+                            <div className="member-name" style={{ fontWeight: 700, fontSize: 15, color: "#1E293B", lineHeight: 1.25 }}>{m.name}</div>
+                            <div className="member-role" style={{ fontSize: 12.5, color: "#64748B", lineHeight: 1.35, marginTop: 2 }}>{designation}</div>
+                          </div>
+                        </div>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 5, paddingTop: 11, borderTop: "1px solid #F1F5F9" }}>
+                          {emailDisplay && (
+                            <div className="member-email" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5, minWidth: 0 }}>
+                              <span style={{ flexShrink: 0, display: "flex", alignItems: "center" }}>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                  <rect x="2" y="4" width="20" height="16" rx="3" fill="#1C2D56" fillOpacity="0.12" stroke="#1C2D56" strokeWidth="1.6"/>
+                                  <path d="M3 6l9 6 9-6" stroke="#1C2D56" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+                                </svg>
+                              </span>
+                              <a href={`mailto:${emailDisplay}`} style={{ color: "#1C2D56", textDecoration: "none", overflowWrap: "anywhere", wordBreak: "break-word", fontWeight: 600 }}>{emailDisplay}</a>
+                            </div>
+                          )}
+                          {contact && (
+                            <div className="member-contact" style={{ display: "flex", alignItems: "center", gap: 8, fontSize: 12.5 }}>
+                              <span style={{ flexShrink: 0 }}>📞</span>
+                              <a href={`tel:${contact.replace(/\s|-/g,"")}`} style={{ color: "#475569", textDecoration: "none" }}>{contact}</a>
+                            </div>
+                          )}
+                          {waHref && (
+                            <a href={waHref} target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6, marginTop: 4, padding: "6px 10px", background: "#DCFCE7", color: "#166534", fontSize: 12, fontWeight: 600, borderRadius: 8, textDecoration: "none", border: "1px solid #86EFAC", alignSelf: "flex-start" }}>
+                              <svg width="15" height="15" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.127.558 4.126 1.533 5.858L.057 23.716a.5.5 0 0 0 .609.61l5.975-1.516A11.95 11.95 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 22c-1.886 0-3.65-.523-5.157-1.432l-.36-.214-3.737.949.988-3.648-.235-.375A9.953 9.953 0 0 1 2 12C2 6.477 6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/></svg>
+                              WhatsApp
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
 
-                {/* Client Representative — only when project has one */}
-                {CLIENT_REPS[projectSlug] && (
-                  <SectionCard
-                    title="Client Representative"
-                    style={{
-                      marginBottom: 0,
-                      background: "linear-gradient(180deg, #F0FDF9 0%, #FFFFFF 100%)",
-                      borderTop: "3px solid #0E7C66",
-                    }}
-                  >
+                  {/* Client Rep — same row, teal-tinted with CLIENT pill */}
+                  {CLIENT_REPS[projectSlug] && (
                     <ClientRepCard rep={CLIENT_REPS[projectSlug]} />
-                  </SectionCard>
-                )}
-
-                {/* Book a Meeting — compact */}
-                <BookMeetingPanel project={project} />
-              </div>
+                  )}
+                </div>
+              </SectionCard>
 
               {/* Quick Actions — now ABOVE Project Documents */}
               <SectionCard title="Quick Actions">
@@ -1839,6 +1901,11 @@ export default function ClientPortal() {
                 </div>
                 <PhaseList phases={project.phases} />
               </SectionCard>
+
+              {/* Book a Meeting — moved to sidebar below Phase Progress */}
+              <div style={{ marginTop: 16 }}>
+                <BookMeetingPanel project={project} />
+              </div>
             </div>
           </div>
         )}
