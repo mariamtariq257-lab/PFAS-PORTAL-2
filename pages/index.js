@@ -661,6 +661,7 @@ function KpiRow({ project }) {
     { label: "Engagement Value",   value: project.pfasFee || "PKR TBD",         sub: "Total advisory fee",        accent: "#6B21A8", bg: "linear-gradient(135deg,#FAF5FF,#FFFFFF)" },
     { label: "Received Payments",  value: receivedDisplay,                      sub: "Of total fee",              accent: "#0369A1", bg: "linear-gradient(135deg,#EFF6FF,#FFFFFF)" },
   ];
+  const bookingUrl = project.teamsBookingUrl || project.teamsMeeting || "#";
   return (
     <div className="kpi-row" style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 14, marginBottom: 18 }}>
       {kpis.map((k, i) => (
@@ -670,6 +671,28 @@ function KpiRow({ project }) {
           <div className="kpi-sub" style={{ fontSize: 12, color: "#94A3B8" }}>{k.sub}</div>
         </div>
       ))}
+      <a
+        href={bookingUrl}
+        target="_blank" rel="noreferrer"
+        className="kpi kpi-action"
+        style={{ ...CARD, marginBottom: 0, padding: 18, background: "linear-gradient(135deg,#EEF2FF,#FFFFFF)", borderLeft: "3px solid #4338CA", textDecoration: "none", display: "block", cursor: "pointer" }}
+      >
+        <div className="kpi-label" style={{ fontSize: 11, fontWeight: 600, letterSpacing: 0.5, textTransform: "uppercase", color: "#64748B", display: "flex", alignItems: "center", gap: 6 }}>
+          <svg width="14" height="14" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v0c0,159.084-118.929,294.296-277.083,310.6-39.083-13.667-81.166-21.083-125-21.083-83.333,0-160.583,27.083-223,72.917v-377.417C1603.75,824.792,1554.637,777.5,1554.637,777.5Z" transform="translate(-128.317 -350.083)"/>
+            <circle fill="#5059C9" cx="1746.583" cy="240.75" r="240.75"/>
+            <path fill="#7B83EB" d="M1183.083,777.5H707.37c-54.391,0-98.483,44.092-98.483,98.483v500.953c0,278.604,225.871,504.475,504.475,504.475h0c278.604,0,504.475-225.871,504.475-504.475V875.983C1617.837,821.592,1573.745,777.5,1519.354,777.5Z" transform="translate(-128.317 -350.083)"/>
+            <circle fill="#7B83EB" cx="945.417" cy="240.75" r="240.75"/>
+          </svg>
+          Schedule
+        </div>
+        <div className="kpi-value" style={{ fontSize: 20, fontWeight: 700, color: "#4338CA", margin: "8px 0 4px", lineHeight: 1.3 }}>Book a Meeting ↗</div>
+        <div className="kpi-sub" style={{ fontSize: 12, color: "#94A3B8" }}>Microsoft Teams · Bookings</div>
+      </a>
+      <style jsx global>{`
+        .kpi-action { transition: transform 0.16s ease, box-shadow 0.16s ease; }
+        .kpi-action:hover { transform: translateY(-3px); box-shadow: 0 10px 24px -10px rgba(67, 56, 202, 0.35); }
+      `}</style>
     </div>
   );
 }
@@ -971,26 +994,37 @@ function ClientRepCard({ rep }) {
       <style jsx global>{`
         .client-tag {
           position: absolute;
-          top: 10px;
-          right: 10px;
-          padding: 3px 11px;
-          border-radius: 999px;
-          background: linear-gradient(135deg, #0E7C66, #0A5F4E);
-          color: #E6FFF7;
+          bottom: 12px;
+          right: 12px;
+          padding: 4px 12px 4px 17px;
+          border-radius: 6px;
+          clip-path: polygon(9px 0, 100% 0, 100% 100%, 9px 100%, 0 50%);
+          background: linear-gradient(135deg, #C9A864, #B08D46);
+          color: #16294A;
           font-size: 9.5px;
           font-weight: 800;
           letter-spacing: 1.4px;
           text-transform: uppercase;
           pointer-events: none;
-          box-shadow: 0 0 0 0 rgba(14, 124, 102, 0.45);
+        }
+        .client-tag::before {
+          content: "";
+          position: absolute;
+          left: 8px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 4px;
+          height: 4px;
+          border-radius: 50%;
+          background: #FFFFFF;
+          opacity: 0.9;
         }
         @media (prefers-reduced-motion: no-preference) {
-          .client-tag { animation: clientTagBeam 2.6s ease-out infinite; }
+          .client-tag { animation: clientTagBeam 2.6s ease-in-out infinite; }
         }
         @keyframes clientTagBeam {
-          0%   { box-shadow: 0 0 0 0 rgba(14, 124, 102, 0.45); }
-          70%  { box-shadow: 0 0 0 9px rgba(14, 124, 102, 0); }
-          100% { box-shadow: 0 0 0 0 rgba(14, 124, 102, 0); }
+          0%, 100% { filter: drop-shadow(0 0 0 rgba(201, 168, 100, 0)); }
+          50%      { filter: drop-shadow(0 0 7px rgba(201, 168, 100, 0.9)); }
         }
       `}</style>
       <div style={{ display: "flex", alignItems: "center", gap: 12, minWidth: 0 }}>
@@ -1940,43 +1974,11 @@ export default function ClientPortal() {
             <div>
               <KpiRow project={project} />
 
-              {/* Project Team + Book a Meeting inline in header */}
               <div className="section-card" style={{ ...CARD, marginBottom: 18 }}>
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 16, flexWrap: "wrap" }} className="project-team-header">
                   <div style={SECTION_TITLE}>
                     <span style={TITLE_BAR} />Project Team
                   </div>
-                  <a
-                    href={project.teamsBookingUrl || project.teamsMeeting || "#"}
-                    target="_blank" rel="noreferrer"
-                    className="teams-meeting-inline-btn"
-                    style={{
-                      display: "inline-flex",
-                      alignItems: "center",
-                      gap: 10,
-                      padding: "11px 20px",
-                      color: "#4338CA",
-                      fontSize: 14.5,
-                      fontWeight: 800,
-                      borderRadius: 12,
-                      textDecoration: "none",
-                      border: "1.5px solid #C7D2FE",
-                      cursor: "pointer",
-                      whiteSpace: "nowrap",
-                      letterSpacing: 0.2,
-                    }}
-                  >
-                    <span className="teams-icon-pop" style={{ width: 22, height: 22, display: "inline-flex" }}>
-                      <svg width="22" height="22" viewBox="0 0 2228.833 2073.333" xmlns="http://www.w3.org/2000/svg">
-                        <path fill="#5059C9" d="M1554.637,777.5h575.713c54.391,0,98.483,44.092,98.483,98.483v0c0,159.084-118.929,294.296-277.083,310.6-39.083-13.667-81.166-21.083-125-21.083-83.333,0-160.583,27.083-223,72.917v-377.417C1603.75,824.792,1554.637,777.5,1554.637,777.5Z" transform="translate(-128.317 -350.083)"/>
-                        <circle fill="#5059C9" cx="1746.583" cy="240.75" r="240.75"/>
-                        <path fill="#7B83EB" opacity="1" d="M1183.083,777.5H707.37c-54.391,0-98.483,44.092-98.483,98.483v500.953c0,278.604,225.871,504.475,504.475,504.475h0c278.604,0,504.475-225.871,504.475-504.475V875.983C1617.837,821.592,1573.745,777.5,1519.354,777.5Z" transform="translate(-128.317 -350.083)"/>
-                        <circle fill="#7B83EB" cx="945.417" cy="240.75" r="240.75"/>
-                      </svg>
-                    </span>
-                    <span>Book a Meeting</span>
-                    <span style={{ fontSize: 16, marginLeft: 2 }}>↗</span>
-                  </a>
                 </div>
 
                 <div
